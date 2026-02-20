@@ -1,0 +1,13 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json ./
+RUN npm install --no-audit --no-fund --legacy-peer-deps
+
+COPY . .
+
+EXPOSE 3000
+
+# Vite dev server — binds to 0.0.0.0 so Docker can reach it
+CMD ["npx", "vite", "--host", "0.0.0.0", "--port", "3000"]

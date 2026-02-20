@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AnatoView — Leopard Frog Cardiovascular System (Ventral View)
+  Anatomical model SVG for interactive dissection lab.
+
+  Orientation: Ventral view of open thorax showing 3-chambered heart.
+  Anatomical left = viewer's right (standard anatomical position).
+
+  Each interactive structure has:
+    id          = slug matching svgElementId in the database
+    data-system = "cardiovascular"
+    data-structure-id = UUID from prisma/seed.ts
+
+  12 structures total, organized in rendering order (back-to-front):
+    1.  Ventricle (single, mixed blood)         struct-frog-cv-001
+    2.  Left Atrium (oxygenated)                struct-frog-cv-002
+    3.  Right Atrium (deoxygenated)             struct-frog-cv-003
+    4.  Sinus Venosus                           struct-frog-cv-004
+    5.  Conus Arteriosus                        struct-frog-cv-005
+    6.  Truncus Arteriosus                      struct-frog-cv-006
+    7.  Carotid Arches                          struct-frog-cv-007
+    8.  Systemic Arches                         struct-frog-cv-008
+    9.  Pulmocutaneous Arches                   struct-frog-cv-009
+    10. Posterior Vena Cava                     struct-frog-cv-010
+    11. Pulmonary Veins                         struct-frog-cv-011
+    12. Cutaneous Artery                        struct-frog-cv-012
+
+  KEY ANATOMY:
+  The leopard frog has a 3-chambered heart: two atria and one undivided
+  ventricle. Blood in the ventricle is partially mixed. The conus
+  arteriosus contains a spiral valve that helps direct relatively
+  deoxygenated blood toward the pulmocutaneous arches and relatively
+  oxygenated blood toward the systemic and carotid arches. The truncus
+  arteriosus branches into three paired arches.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 900"
+     width="1200"
+     height="900"
+     role="img"
+     aria-label="Leopard frog cardiovascular system ventral view">
+
+  <title>Leopard Frog Cardiovascular System — Ventral View</title>
+  <desc>Interactive SVG of a leopard frog 3-chambered heart showing the single ventricle, two atria, conus and truncus arteriosus, three pairs of aortic arches, sinus venosus, and cutaneous circulation for comparative anatomy study.</desc>
+
+  <!-- =================================================================
+       DEFINITIONS — gradients, filters, markers
+       ================================================================= -->
+  <defs>
+    <!-- Oxygenated blood gradient (bright red) -->
+    <linearGradient id="grad-oxy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E53935"/>
+      <stop offset="100%" stop-color="#B71C1C"/>
+    </linearGradient>
+
+    <!-- Deoxygenated blood gradient (dark blue) -->
+    <linearGradient id="grad-deoxy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5C6BC0"/>
+      <stop offset="100%" stop-color="#283593"/>
+    </linearGradient>
+
+    <!-- Mixed blood gradient (purple — single ventricle) -->
+    <linearGradient id="grad-mixed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#AB47BC"/>
+      <stop offset="100%" stop-color="#7B1FA2"/>
+    </linearGradient>
+
+    <!-- Myocardium wall gradient -->
+    <linearGradient id="grad-wall" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C8A88A"/>
+      <stop offset="100%" stop-color="#A1887F"/>
+    </linearGradient>
+
+    <!-- Artery wall gradient -->
+    <linearGradient id="grad-artery" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EF5350"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </linearGradient>
+
+    <!-- Vein wall gradient -->
+    <linearGradient id="grad-vein" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7986CB"/>
+      <stop offset="100%" stop-color="#3949AB"/>
+    </linearGradient>
+
+    <!-- Cutaneous circulation gradient (green) -->
+    <linearGradient id="grad-cutaneous" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#66BB6A"/>
+      <stop offset="100%" stop-color="#388E3C"/>
+    </linearGradient>
+
+    <!-- Conus / truncus arteriosus gradient (orange) -->
+    <linearGradient id="grad-conus" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FFAB91"/>
+      <stop offset="100%" stop-color="#FF5722"/>
+    </linearGradient>
+
+    <!-- Radial gradient for ventricle interior -->
+    <radialGradient id="grad-mixed-radial" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#CE93D8"/>
+      <stop offset="100%" stop-color="#7B1FA2"/>
+    </radialGradient>
+
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+
+    <!-- Hover glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Inner glow for chambers -->
+    <filter id="inner-glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Arrow marker for flow arrows -->
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse"
+            fill="#E53935">
+      <path d="M0,0 L10,5 L0,10 Z"/>
+    </marker>
+
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse"
+            fill="#3949AB">
+      <path d="M0,0 L10,5 L0,10 Z"/>
+    </marker>
+
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse"
+            fill="#7B1FA2">
+      <path d="M0,0 L10,5 L0,10 Z"/>
+    </marker>
+
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse"
+            fill="#388E3C">
+      <path d="M0,0 L10,5 L0,10 Z"/>
+    </marker>
+
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse"
+            fill="#FF5722">
+      <path d="M0,0 L10,5 L0,10 Z"/>
+    </marker>
+  </defs>
+
+  <!-- =================================================================
+       BACKGROUND — Light green tint with frog body silhouette
+       ================================================================= -->
+  <rect width="1200" height="900" fill="#F1F8E9" rx="8"/>
+
+  <!-- Frog body silhouette (ventral outline) -->
+  <path d="M600,80 Q520,80 470,110 Q430,135 410,170 Q390,210 385,260
+           Q375,320 370,380 Q360,440 350,490 Q330,560 290,620
+           Q250,670 220,720 Q200,760 210,800 Q230,830 270,820
+           Q310,800 340,760 Q360,720 380,680 Q400,640 420,610
+           Q450,570 480,550 Q520,535 560,530 Q580,528 600,528
+           Q620,528 640,530 Q680,535 720,550 Q750,570 780,610
+           Q800,640 820,680 Q840,720 860,760 Q890,800 930,820
+           Q970,830 990,800 Q1000,760 980,720 Q950,670 910,620
+           Q870,560 850,490 Q840,440 830,380 Q825,320 815,260
+           Q810,210 790,170 Q770,135 730,110 Q680,80 600,80 Z"
+        fill="#C8E6C9" opacity="0.25" stroke="#A5D6A7" stroke-width="1.5"/>
+
+  <!-- Eyes (background context) -->
+  <ellipse cx="460" cy="115" rx="30" ry="22" fill="#E8F5E9" opacity="0.4" stroke="#A5D6A7" stroke-width="1"/>
+  <ellipse cx="740" cy="115" rx="30" ry="22" fill="#E8F5E9" opacity="0.4" stroke="#A5D6A7" stroke-width="1"/>
+
+  <!-- Lungs (background context, small in frogs) -->
+  <path d="M370,340 Q340,380 335,430 Q330,480 345,520 Q365,550 400,540
+           Q425,530 430,490 Q435,440 420,390 Q410,350 370,340 Z"
+        fill="#FFCDD2" opacity="0.2" stroke="#EF9A9A" stroke-width="1"/>
+  <path d="M830,340 Q860,380 865,430 Q870,480 855,520 Q835,550 800,540
+           Q775,530 770,490 Q765,440 780,390 Q790,350 830,340 Z"
+        fill="#FFCDD2" opacity="0.2" stroke="#EF9A9A" stroke-width="1"/>
+  <text x="365" y="445" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#EF9A9A" opacity="0.6">Lung</text>
+  <text x="830" y="445" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#EF9A9A" opacity="0.6">Lung</text>
+
+  <!-- Title label -->
+  <text x="600" y="42" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" fill="#1B5E20" letter-spacing="0.5">
+    LEOPARD FROG CARDIOVASCULAR SYSTEM — VENTRAL VIEW
+  </text>
+
+  <!-- Subtitle -->
+  <text x="600" y="64" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#558B2F" font-style="italic">
+    Rana pipiens — 3-Chambered Heart with Single Ventricle
+  </text>
+
+  <!-- =================================================================
+       LAYER 1 — DEEP VESSELS (behind the heart)
+       ================================================================= -->
+
+  <!-- 10. Posterior Vena Cava — large vein returning blood from body -->
+  <g id="posterior-vena-cava"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-010"
+     cursor="pointer">
+    <path d="M560,820 L560,720 Q558,680 555,640 Q552,600 548,570"
+          fill="none" stroke="url(#grad-vein)" stroke-width="20" stroke-linecap="round" opacity="0.9"/>
+    <!-- Hepatic branch -->
+    <path d="M555,680 Q530,690 500,700 Q470,710 440,720"
+          fill="none" stroke="url(#grad-vein)" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
+    <path d="M555,680 Q530,690 500,700 Q470,710 440,720"
+          fill="none" stroke="none" stroke-width="20" opacity="0" pointer-events="stroke"/>
+    <text x="575" y="780" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#3949AB" font-weight="600">Posterior Vena Cava</text>
+    <!-- Flow arrow -->
+    <path d="M565,800 L565,750" fill="none" stroke="#3949AB" stroke-width="2"
+          marker-end="url(#arrow-blue)" opacity="0.6"/>
+  </g>
+
+  <!-- 11. Pulmonary Veins — return oxygenated blood from lungs to left atrium -->
+  <g id="pulmonary-veins"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-011"
+     cursor="pointer">
+    <!-- Left pulmonary vein (from viewer's left lung) -->
+    <path d="M380,460 Q420,440 460,420 Q490,408 520,395"
+          fill="none" stroke="#E53935" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+    <!-- Right pulmonary vein (from viewer's right lung) -->
+    <path d="M820,460 Q780,440 740,420 Q710,408 680,395"
+          fill="none" stroke="#E53935" stroke-width="10" stroke-linecap="round" opacity="0.75"/>
+    <!-- Invisible hit areas -->
+    <path d="M380,460 Q420,440 460,420 Q490,408 520,395"
+          fill="none" stroke="none" stroke-width="22" opacity="0" pointer-events="stroke"/>
+    <path d="M820,460 Q780,440 740,420 Q710,408 680,395"
+          fill="none" stroke="none" stroke-width="22" opacity="0" pointer-events="stroke"/>
+    <text x="365" y="478" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#C62828" font-style="italic">Pulm. Vein</text>
+    <text x="790" y="478" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#C62828" font-style="italic">Pulm. Vein</text>
+    <!-- Flow arrows -->
+    <path d="M400,455 L460,430" fill="none" stroke="#E53935" stroke-width="1.5"
+          marker-end="url(#arrow-red)" opacity="0.6"/>
+    <path d="M800,455 L740,430" fill="none" stroke="#E53935" stroke-width="1.5"
+          marker-end="url(#arrow-red)" opacity="0.6"/>
+  </g>
+
+  <!-- =================================================================
+       LAYER 2 — AORTIC ARCHES (three pairs branching from truncus)
+       ================================================================= -->
+
+  <!-- 7. Carotid Arches — carry blood to the head (most oxygenated) -->
+  <g id="carotid-arches"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-007"
+     cursor="pointer">
+    <!-- Left carotid (viewer's right) -->
+    <path d="M630,225 Q640,195 650,165 Q665,130 680,105 Q700,80 720,65"
+          fill="none" stroke="url(#grad-artery)" stroke-width="12" stroke-linecap="round"/>
+    <!-- Right carotid (viewer's left) -->
+    <path d="M570,225 Q560,195 550,165 Q535,130 520,105 Q500,80 480,65"
+          fill="none" stroke="url(#grad-artery)" stroke-width="12" stroke-linecap="round"/>
+    <!-- Invisible hit areas -->
+    <path d="M630,225 Q640,195 650,165 Q665,130 680,105 Q700,80 720,65"
+          fill="none" stroke="none" stroke-width="24" opacity="0" pointer-events="stroke"/>
+    <path d="M570,225 Q560,195 550,165 Q535,130 520,105 Q500,80 480,65"
+          fill="none" stroke="none" stroke-width="24" opacity="0" pointer-events="stroke"/>
+    <!-- Carotid gland (small bulb) -->
+    <circle cx="720" cy="65" r="6" fill="#EF5350" stroke="#C62828" stroke-width="1.5"/>
+    <circle cx="480" cy="65" r="6" fill="#EF5350" stroke="#C62828" stroke-width="1.5"/>
+    <text x="725" y="78" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-weight="600">Carotid Arch</text>
+    <text x="410" y="78" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-weight="600">Carotid Arch</text>
+    <!-- Flow arrows -->
+    <path d="M660,150 L680,110" fill="none" stroke="#C62828" stroke-width="1.5"
+          marker-end="url(#arrow-red)" opacity="0.6"/>
+    <path d="M540,150 L520,110" fill="none" stroke="#C62828" stroke-width="1.5"
+          marker-end="url(#arrow-red)" opacity="0.6"/>
+  </g>
+
+  <!-- 8. Systemic Arches — carry blood to the body (main aortic arches) -->
+  <g id="systemic-arches"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-008"
+     cursor="pointer">
+    <!-- Left systemic arch (viewer's right) — curves dorsally -->
+    <path d="M645,238 Q670,220 700,210 Q740,200 780,205
+             Q820,215 840,240 Q855,265 855,300 Q855,340 845,380
+             L840,420 Q835,470 830,520 L825,600 Q820,680 815,760"
+          fill="none" stroke="url(#grad-artery)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+    <!-- Right systemic arch (viewer's left) — curves dorsally -->
+    <path d="M555,238 Q530,220 500,210 Q460,200 420,205
+             Q380,215 360,240 Q345,265 345,300 Q345,340 355,380
+             L360,420 Q365,470 370,520 L375,600 Q380,680 385,760"
+          fill="none" stroke="url(#grad-artery)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+    <!-- Dorsal aorta (fusion of systemic arches) -->
+    <path d="M815,760 Q800,790 600,800 Q400,790 385,760"
+          fill="none" stroke="url(#grad-artery)" stroke-width="14" stroke-linecap="round" opacity="0.7"/>
+    <!-- Invisible hit areas -->
+    <path d="M645,238 Q670,220 700,210 Q740,200 780,205 Q820,215 840,240"
+          fill="none" stroke="none" stroke-width="26" opacity="0" pointer-events="stroke"/>
+    <path d="M555,238 Q530,220 500,210 Q460,200 420,205 Q380,215 360,240"
+          fill="none" stroke="none" stroke-width="26" opacity="0" pointer-events="stroke"/>
+    <text x="860" y="290" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-weight="600">Systemic</text>
+    <text x="860" y="303" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-weight="600">Arch</text>
+    <text x="290" y="290" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-weight="600">Systemic</text>
+    <text x="290" y="303" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-weight="600">Arch</text>
+    <text x="560" y="818" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#C62828" font-style="italic">Dorsal Aorta</text>
+    <!-- Flow arrows -->
+    <path d="M760,205 L810,220" fill="none" stroke="#C62828" stroke-width="1.5"
+          marker-end="url(#arrow-red)" opacity="0.5"/>
+    <path d="M440,205 L390,220" fill="none" stroke="#C62828" stroke-width="1.5"
+          marker-end="url(#arrow-red)" opacity="0.5"/>
+  </g>
+
+  <!-- 9. Pulmocutaneous Arches — carry blood to lungs and skin -->
+  <g id="pulmocutaneous-arches"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-009"
+     cursor="pointer">
+    <!-- Left pulmocutaneous (viewer's right) -->
+    <path d="M650,250 Q680,248 710,252 Q750,260 780,278
+             Q810,300 825,335 Q835,370 830,410"
+          fill="none" stroke="url(#grad-vein)" stroke-width="12" stroke-linecap="round" opacity="0.85"/>
+    <!-- Pulmonary branch -->
+    <path d="M830,410 Q835,430 840,450 Q845,475 840,500"
+          fill="none" stroke="url(#grad-vein)" stroke-width="9" stroke-linecap="round" opacity="0.75"/>
+    <!-- Right pulmocutaneous (viewer's left) -->
+    <path d="M550,250 Q520,248 490,252 Q450,260 420,278
+             Q390,300 375,335 Q365,370 370,410"
+          fill="none" stroke="url(#grad-vein)" stroke-width="12" stroke-linecap="round" opacity="0.85"/>
+    <!-- Pulmonary branch -->
+    <path d="M370,410 Q365,430 360,450 Q355,475 360,500"
+          fill="none" stroke="url(#grad-vein)" stroke-width="9" stroke-linecap="round" opacity="0.75"/>
+    <!-- Invisible hit areas -->
+    <path d="M650,250 Q680,248 710,252 Q750,260 780,278 Q810,300 825,335"
+          fill="none" stroke="none" stroke-width="24" opacity="0" pointer-events="stroke"/>
+    <path d="M550,250 Q520,248 490,252 Q450,260 420,278 Q390,300 375,335"
+          fill="none" stroke="none" stroke-width="24" opacity="0" pointer-events="stroke"/>
+    <text x="840" y="355" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#283593" font-weight="600">Pulmocutaneous</text>
+    <text x="840" y="368" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#283593" font-weight="600">Arch</text>
+    <text x="270" y="355" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#283593" font-weight="600">Pulmocutaneous</text>
+    <text x="270" y="368" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#283593" font-weight="600">Arch</text>
+    <!-- Flow arrows -->
+    <path d="M770,265 L810,300" fill="none" stroke="#3949AB" stroke-width="1.5"
+          marker-end="url(#arrow-blue)" opacity="0.5"/>
+    <path d="M430,265 L390,300" fill="none" stroke="#3949AB" stroke-width="1.5"
+          marker-end="url(#arrow-blue)" opacity="0.5"/>
+  </g>
+
+  <!-- 12. Cutaneous Artery — branches off pulmocutaneous, goes to skin -->
+  <g id="cutaneous-artery"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-012"
+     cursor="pointer">
+    <!-- Left cutaneous artery (viewer's right) — branches off pulmocutaneous arch -->
+    <path d="M825,375 Q860,370 895,380 Q930,395 955,420
+             Q975,450 980,490 Q980,530 970,570 Q955,610 930,640"
+          fill="none" stroke="url(#grad-cutaneous)" stroke-width="8" stroke-linecap="round"/>
+    <!-- Right cutaneous artery (viewer's left) -->
+    <path d="M375,375 Q340,370 305,380 Q270,395 245,420
+             Q225,450 220,490 Q220,530 230,570 Q245,610 270,640"
+          fill="none" stroke="url(#grad-cutaneous)" stroke-width="8" stroke-linecap="round"/>
+    <!-- Skin capillary network suggestions -->
+    <path d="M930,640 Q940,660 960,670 Q980,675 990,660"
+          fill="none" stroke="url(#grad-cutaneous)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+    <path d="M930,640 Q920,665 925,690"
+          fill="none" stroke="url(#grad-cutaneous)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+    <path d="M270,640 Q260,660 240,670 Q220,675 210,660"
+          fill="none" stroke="url(#grad-cutaneous)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+    <path d="M270,640 Q280,665 275,690"
+          fill="none" stroke="url(#grad-cutaneous)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+    <!-- Invisible hit areas -->
+    <path d="M825,375 Q860,370 895,380 Q930,395 955,420 Q975,450 980,490"
+          fill="none" stroke="none" stroke-width="20" opacity="0" pointer-events="stroke"/>
+    <path d="M375,375 Q340,370 305,380 Q270,395 245,420 Q225,450 220,490"
+          fill="none" stroke="none" stroke-width="20" opacity="0" pointer-events="stroke"/>
+    <text x="985" y="500" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#388E3C" font-weight="600">Cutaneous</text>
+    <text x="985" y="513" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#388E3C" font-weight="600">Artery</text>
+    <text x="155" y="500" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#388E3C" font-weight="600">Cutaneous</text>
+    <text x="155" y="513" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#388E3C" font-weight="600">Artery</text>
+    <!-- Skin gas exchange symbol -->
+    <text x="980" y="605" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#388E3C" opacity="0.7" font-style="italic">O2 / CO2</text>
+    <text x="200" y="605" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#388E3C" opacity="0.7" font-style="italic">O2 / CO2</text>
+    <!-- Flow arrows -->
+    <path d="M900,385 L940,410" fill="none" stroke="#388E3C" stroke-width="1.5"
+          marker-end="url(#arrow-green)" opacity="0.6"/>
+    <path d="M300,385 L260,410" fill="none" stroke="#388E3C" stroke-width="1.5"
+          marker-end="url(#arrow-green)" opacity="0.6"/>
+  </g>
+
+  <!-- =================================================================
+       LAYER 3 — HEART WALL (pericardium / myocardium outline)
+       ================================================================= -->
+
+  <!-- Outer heart wall — pericardium silhouette -->
+  <path d="M480,280 Q440,320 430,380 Q420,440 425,500
+           Q430,560 460,610 Q490,650 540,670
+           Q580,680 600,680 Q620,680 660,670
+           Q710,650 740,610 Q770,560 775,500
+           Q780,440 770,380 Q760,320 720,280
+           Q680,260 600,255 Q520,260 480,280 Z"
+        fill="url(#grad-wall)" stroke="#8D6E63" stroke-width="3" filter="url(#shadow)" opacity="0.95"/>
+
+  <!-- =================================================================
+       LAYER 4 — SINUS VENOSUS (behind right atrium)
+       ================================================================= -->
+
+  <!-- 4. Sinus Venosus — thin-walled sac receiving venous blood -->
+  <g id="sinus-venosus"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-004"
+     cursor="pointer">
+    <path d="M460,370 Q440,380 430,400 Q420,425 425,450
+             Q430,475 445,490 Q460,500 480,500
+             Q500,498 510,488 Q520,475 520,455
+             Q520,430 512,410 Q505,390 490,375 Q475,365 460,370 Z"
+          fill="#3F51B5" stroke="#283593" stroke-width="2" opacity="0.5"/>
+    <!-- Thin wall indicator (hatching) -->
+    <path d="M435,410 Q430,430 432,455"
+          fill="none" stroke="#9FA8DA" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+    <path d="M440,395 Q435,420 437,445"
+          fill="none" stroke="#9FA8DA" stroke-width="1" stroke-dasharray="3 3" opacity="0.6"/>
+    <text x="425" y="520" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#283593" font-weight="600">Sinus Venosus</text>
+    <!-- Flow arrow into RA -->
+    <path d="M505,435 L530,415" fill="none" stroke="#3949AB" stroke-width="1.5"
+          marker-end="url(#arrow-blue)" opacity="0.6"/>
+  </g>
+
+  <!-- =================================================================
+       LAYER 5 — HEART CHAMBERS
+       ================================================================= -->
+
+  <!-- 3. Right Atrium (viewer's left, anatomical right) — deoxygenated blood -->
+  <g id="right-atrium"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-003"
+     cursor="pointer">
+    <path d="M500,310 Q470,325 455,350 Q442,378 445,405
+             Q448,430 465,448 Q485,462 510,460
+             Q535,458 555,442 Q570,425 575,400
+             Q578,375 570,350 Q560,328 542,315
+             Q525,305 500,310 Z"
+          fill="url(#grad-deoxy)" stroke="#3949AB" stroke-width="2" opacity="0.9"/>
+    <text x="505" y="390" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#fff" font-weight="700">RA</text>
+    <text x="505" y="405" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#E8EAF6" font-style="italic">(deoxy)</text>
+  </g>
+
+  <!-- 2. Left Atrium (viewer's right, anatomical left) — oxygenated blood -->
+  <g id="left-atrium"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-002"
+     cursor="pointer">
+    <path d="M660,310 Q630,325 617,350 Q605,378 608,405
+             Q612,430 630,448 Q650,462 675,460
+             Q700,458 718,442 Q733,425 737,400
+             Q740,375 732,350 Q722,328 705,315
+             Q688,305 660,310 Z"
+          fill="url(#grad-oxy)" stroke="#C62828" stroke-width="2" opacity="0.9"/>
+    <text x="670" y="390" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#fff" font-weight="700">LA</text>
+    <text x="670" y="405" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#FFCDD2" font-style="italic">(oxy)</text>
+  </g>
+
+  <!-- Interatrial septum — thin line separating atria -->
+  <path d="M575,315 Q585,360 585,400 Q585,440 580,460"
+        fill="none" stroke="#8D6E63" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <text x="587" y="345" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#8D6E63" opacity="0.7" transform="rotate(-85 587 345)">SEPTUM</text>
+
+  <!-- Atrioventricular opening indicators -->
+  <ellipse cx="540" cy="465" rx="25" ry="8" fill="#8D6E63" opacity="0.4" stroke="#6D4C41" stroke-width="1"/>
+  <ellipse cx="660" cy="465" rx="25" ry="8" fill="#8D6E63" opacity="0.4" stroke="#6D4C41" stroke-width="1"/>
+  <text x="540" y="483" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#6D4C41" opacity="0.7">AV opening</text>
+  <text x="660" y="483" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#6D4C41" opacity="0.7">AV opening</text>
+
+  <!-- 1. Ventricle (single, undivided) — MIXED BLOOD (PURPLE) -->
+  <g id="ventricle"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-001"
+     cursor="pointer">
+    <!-- Thick muscular walls (trabeculae suggestion) -->
+    <path d="M490,470 Q450,500 440,540 Q432,580 440,615
+             Q452,650 480,665 Q520,680 560,682
+             Q580,683 600,683 Q620,683 640,682
+             Q680,680 720,665 Q748,650 760,615
+             Q768,580 760,540 Q750,500 710,470
+             Q670,455 600,452 Q530,455 490,470 Z"
+          fill="url(#grad-mixed-radial)" stroke="#6A1B9A" stroke-width="2.5" opacity="0.92"/>
+    <!-- Internal trabeculae carneae ridges -->
+    <path d="M475,530 Q490,555 510,570" fill="none" stroke="#9C27B0" stroke-width="2" opacity="0.3"/>
+    <path d="M465,560 Q485,580 510,595" fill="none" stroke="#9C27B0" stroke-width="2" opacity="0.3"/>
+    <path d="M725,530 Q710,555 690,570" fill="none" stroke="#9C27B0" stroke-width="2" opacity="0.3"/>
+    <path d="M735,560 Q715,580 690,595" fill="none" stroke="#9C27B0" stroke-width="2" opacity="0.3"/>
+    <path d="M550,665 Q570,650 600,645 Q630,650 650,665" fill="none" stroke="#9C27B0" stroke-width="2" opacity="0.25"/>
+    <!-- Central label -->
+    <text x="600" y="575" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="18" fill="#fff" font-weight="700">VENTRICLE</text>
+    <text x="600" y="595" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#E1BEE7" font-style="italic">(single, mixed blood)</text>
+    <!-- "NO SEPTUM" callout -->
+    <text x="600" y="635" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#CE93D8" font-weight="600" letter-spacing="1">NO SEPTUM</text>
+    <!-- Thick wall indicators -->
+    <path d="M445,520 Q435,560 440,600 Q448,640 468,660"
+          fill="none" stroke="#A1887F" stroke-width="10" opacity="0.35" stroke-linecap="round"/>
+    <path d="M755,520 Q765,560 760,600 Q752,640 732,660"
+          fill="none" stroke="#A1887F" stroke-width="10" opacity="0.35" stroke-linecap="round"/>
+  </g>
+
+  <!-- =================================================================
+       LAYER 6 — CONUS ARTERIOSUS & TRUNCUS ARTERIOSUS
+       ================================================================= -->
+
+  <!-- 5. Conus Arteriosus — muscular outflow with spiral valve -->
+  <g id="conus-arteriosus"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-005"
+     cursor="pointer">
+    <path d="M575,455 Q570,420 572,385 Q575,350 580,320
+             Q585,295 590,275 L610,275
+             Q615,295 620,320 Q625,350 628,385
+             Q630,420 625,455 Z"
+          fill="url(#grad-conus)" stroke="#E64A19" stroke-width="2" opacity="0.9"/>
+    <!-- Spiral valve inside conus (key feature) -->
+    <path d="M585,440 Q595,420 605,430 Q615,440 595,450"
+          fill="none" stroke="#BF360C" stroke-width="2" opacity="0.6"/>
+    <path d="M588,410 Q598,395 608,405 Q618,415 598,420"
+          fill="none" stroke="#BF360C" stroke-width="2" opacity="0.6"/>
+    <path d="M590,380 Q600,365 610,375 Q620,385 600,390"
+          fill="none" stroke="#BF360C" stroke-width="2" opacity="0.6"/>
+    <path d="M592,350 Q602,335 612,345 Q622,355 602,360"
+          fill="none" stroke="#BF360C" stroke-width="2" opacity="0.6"/>
+    <path d="M594,320 Q604,305 614,315 Q624,325 604,330"
+          fill="none" stroke="#BF360C" stroke-width="2" opacity="0.6"/>
+    <text x="636" y="370" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#BF360C" font-weight="700">Conus</text>
+    <text x="636" y="383" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#BF360C" font-weight="700">Arteriosus</text>
+    <text x="636" y="396" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#E64A19" font-style="italic">(spiral valve)</text>
+    <!-- Flow arrow -->
+    <path d="M600,445 L600,300" fill="none" stroke="#FF5722" stroke-width="2"
+          marker-end="url(#arrow-orange)" opacity="0.5"/>
+  </g>
+
+  <!-- 6. Truncus Arteriosus — splits into three arch pairs -->
+  <g id="truncus-arteriosus"
+     data-system="cardiovascular"
+     data-structure-id="struct-frog-cv-006"
+     cursor="pointer">
+    <!-- Main trunk -->
+    <path d="M585,278 Q580,260 578,245 Q575,228 575,215
+             L625,215 Q625,228 622,245 Q620,260 615,278 Z"
+          fill="url(#grad-conus)" stroke="#E64A19" stroke-width="2" opacity="0.88"/>
+    <!-- Bifurcation point -->
+    <path d="M575,215 Q570,205 560,198 Q548,192 535,195"
+          fill="none" stroke="url(#grad-conus)" stroke-width="14" stroke-linecap="round" opacity="0.8"/>
+    <path d="M625,215 Q630,205 640,198 Q652,192 665,195"
+          fill="none" stroke="url(#grad-conus)" stroke-width="14" stroke-linecap="round" opacity="0.8"/>
+    <!-- Three branch points on each side (where arches originate) -->
+    <!-- Viewer's left (anatomical right) -->
+    <circle cx="555" cy="235" r="4" fill="#FF5722" opacity="0.6"/>
+    <circle cx="548" cy="248" r="4" fill="#FF5722" opacity="0.6"/>
+    <circle cx="543" cy="260" r="4" fill="#FF5722" opacity="0.6"/>
+    <!-- Viewer's right (anatomical left) -->
+    <circle cx="645" cy="235" r="4" fill="#FF5722" opacity="0.6"/>
+    <circle cx="652" cy="248" r="4" fill="#FF5722" opacity="0.6"/>
+    <circle cx="657" cy="260" r="4" fill="#FF5722" opacity="0.6"/>
+    <text x="510" y="188" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#BF360C" font-weight="700">Truncus Arteriosus</text>
+    <!-- Flow arrow -->
+    <path d="M600,270 L600,225" fill="none" stroke="#FF5722" stroke-width="2"
+          marker-end="url(#arrow-orange)" opacity="0.5"/>
+  </g>
+
+  <!-- =================================================================
+       FLOW ARROWS — Major circulation pathways
+       ================================================================= -->
+
+  <!-- Systemic return flow (body -> sinus venosus -> RA) -->
+  <path d="M560,740 Q558,700 555,660 Q550,610 540,575"
+        fill="none" stroke="#5C6BC0" stroke-width="2" stroke-dasharray="6 3"
+        marker-end="url(#arrow-blue)" opacity="0.35"/>
+
+  <!-- RA -> Ventricle flow -->
+  <path d="M510,450 L530,465"
+        fill="none" stroke="#5C6BC0" stroke-width="2"
+        marker-end="url(#arrow-blue)" opacity="0.45"/>
+
+  <!-- LA -> Ventricle flow -->
+  <path d="M665,450 L655,465"
+        fill="none" stroke="#E53935" stroke-width="2"
+        marker-end="url(#arrow-red)" opacity="0.45"/>
+
+  <!-- Ventricle -> Conus flow -->
+  <path d="M600,460 L600,445"
+        fill="none" stroke="#7B1FA2" stroke-width="2.5"
+        marker-end="url(#arrow-purple)" opacity="0.5"/>
+
+  <!-- =================================================================
+       ORIENTATION COMPASS
+       ================================================================= -->
+  <g transform="translate(75,130)">
+    <circle cx="0" cy="0" r="32" fill="white" stroke="#1B5E20" stroke-width="1.5" opacity="0.9"/>
+    <text x="0" y="-18" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#1B5E20" font-weight="700">Cranial</text>
+    <text x="0" y="25" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#1B5E20" font-weight="700">Caudal</text>
+    <text x="-28" y="4" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#1B5E20">R</text>
+    <text x="28" y="4" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#1B5E20">L</text>
+    <!-- Cross lines -->
+    <line x1="0" y1="-10" x2="0" y2="10" stroke="#1B5E20" stroke-width="1.5"/>
+    <line x1="-10" y1="0" x2="10" y2="0" stroke="#1B5E20" stroke-width="1.5"/>
+    <!-- Arrow tips -->
+    <polygon points="0,-12 -3,-7 3,-7" fill="#1B5E20"/>
+    <polygon points="0,12 -3,7 3,7" fill="#1B5E20"/>
+    <text x="0" y="48" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#558B2F" font-style="italic">Ventral View</text>
+  </g>
+
+  <!-- =================================================================
+       LEGEND
+       ================================================================= -->
+  <g transform="translate(30,680)">
+    <rect x="0" y="0" width="185" height="190" rx="6" fill="white" stroke="#C5E1A5" stroke-width="1.5" opacity="0.95"/>
+    <text x="92" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#1B5E20">LEGEND</text>
+    <line x1="10" y1="28" x2="175" y2="28" stroke="#C5E1A5" stroke-width="1"/>
+
+    <!-- Oxygenated -->
+    <rect x="12" y="36" width="16" height="12" rx="3" fill="url(#grad-oxy)"/>
+    <text x="34" y="46" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Oxygenated blood</text>
+
+    <!-- Deoxygenated -->
+    <rect x="12" y="56" width="16" height="12" rx="3" fill="url(#grad-deoxy)"/>
+    <text x="34" y="66" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Deoxygenated blood</text>
+
+    <!-- Mixed -->
+    <rect x="12" y="76" width="16" height="12" rx="3" fill="url(#grad-mixed)"/>
+    <text x="34" y="86" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Mixed blood (ventricle)</text>
+
+    <!-- Myocardium -->
+    <rect x="12" y="96" width="16" height="12" rx="3" fill="url(#grad-wall)"/>
+    <text x="34" y="106" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Myocardium</text>
+
+    <!-- Artery -->
+    <line x1="12" y1="122" x2="28" y2="122" stroke="url(#grad-artery)" stroke-width="4" stroke-linecap="round"/>
+    <text x="34" y="126" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Arteries</text>
+
+    <!-- Vein -->
+    <line x1="12" y1="140" x2="28" y2="140" stroke="url(#grad-vein)" stroke-width="4" stroke-linecap="round"/>
+    <text x="34" y="144" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Veins</text>
+
+    <!-- Cutaneous -->
+    <line x1="12" y1="158" x2="28" y2="158" stroke="url(#grad-cutaneous)" stroke-width="4" stroke-linecap="round"/>
+    <text x="34" y="162" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Cutaneous circulation</text>
+
+    <!-- Conus/Truncus -->
+    <rect x="12" y="170" width="16" height="12" rx="3" fill="url(#grad-conus)"/>
+    <text x="34" y="180" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#333">Conus / Truncus</text>
+  </g>
+
+  <!-- =================================================================
+       ANNOTATIONS — Key anatomical notes
+       ================================================================= -->
+
+  <!-- 3-chambered heart callout -->
+  <g transform="translate(920,140)">
+    <rect x="0" y="0" width="220" height="85" rx="6" fill="white" stroke="#7B1FA2" stroke-width="1.5" opacity="0.93"/>
+    <text x="110" y="20" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#7B1FA2">3-CHAMBERED HEART</text>
+    <line x1="10" y1="28" x2="210" y2="28" stroke="#CE93D8" stroke-width="1"/>
+    <text x="15" y="44" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4A148C">2 Atria + 1 Ventricle (no septum)</text>
+    <text x="15" y="58" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4A148C">Spiral valve in conus partially</text>
+    <text x="15" y="70" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4A148C">separates oxy/deoxy streams</text>
+    <text x="15" y="82" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4A148C">Cutaneous respiration supplements lungs</text>
+  </g>
+
+  <!-- Arch branching annotation -->
+  <g transform="translate(920,240)">
+    <rect x="0" y="0" width="220" height="70" rx="6" fill="white" stroke="#E64A19" stroke-width="1.5" opacity="0.93"/>
+    <text x="110" y="18" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#BF360C">AORTIC ARCH PAIRS</text>
+    <line x1="10" y1="25" x2="210" y2="25" stroke="#FFAB91" stroke-width="1"/>
+    <text x="15" y="40" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BF360C">I. Carotid arches (to head)</text>
+    <text x="15" y="52" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BF360C">II. Systemic arches (to body)</text>
+    <text x="15" y="64" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BF360C">III. Pulmocutaneous arches (lungs/skin)</text>
+  </g>
+
+  <!-- =================================================================
+       FOOTER
+       ================================================================= -->
+  <text x="600" y="880" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#689F38" opacity="0.7">
+    AnatoView — Leopard Frog (Rana pipiens) Cardiovascular Model — Comparative Anatomy
+  </text>
+  <text x="600" y="895" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#9E9E9E" opacity="0.6">
+    3-chambered heart | Single ventricle | Cutaneous respiration | 3 pairs of aortic arches
+  </text>
+
+</svg>

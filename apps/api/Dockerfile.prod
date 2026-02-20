@@ -1,0 +1,40 @@
+FROM node:20-alpine AS builder
+
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# Install ALL dependencies (including devDeps for tsc build)
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npx prisma generate
+RUN npm run build
+
+# Prune dev dependencies after build
+RUN npm prune --omit=dev
+
+# ────────────────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Copy only production artifacts
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+COPY package*.json ./
+
+# Run as non-root user
+RUN addgroup -S anatoview && adduser -S anatoview -G anatoview
+USER anatoview
+
+EXPOSE 3001
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD wget -qO- http://localhost:3001/health || exit 1
+
+CMD ["node", "dist/index.js"]

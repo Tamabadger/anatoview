@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AnatoView — Earthworm Cardiovascular System (Dorsal Longitudinal Section)
+  Anatomical model SVG for interactive dissection lab.
+
+  Orientation: Dorsal longitudinal section, anterior (head) on LEFT,
+  posterior (tail) on RIGHT. Invertebrate with CLOSED circulatory system
+  and SEGMENTED body plan (Annelida: Oligochaeta).
+
+  Each interactive structure has:
+    id          = slug matching svgElementId in the database
+    data-system = "cardiovascular"
+    data-structure-id = UUID from prisma/seed.ts
+
+  10 structures total, organized in rendering order (back-to-front):
+    1. Dorsal Blood Vessel   (struct-worm-cv-001)
+    2. Ventral Blood Vessel  (struct-worm-cv-002)
+    3. Aortic Arches          (struct-worm-cv-003)
+    4. Subneural Vessel       (struct-worm-cv-004)
+    5. Ventral Nerve Cord     (struct-worm-cv-005)
+    6. Cerebral Ganglia       (struct-worm-cv-006)
+    7. Segmental Vessels      (struct-worm-cv-007)
+    8. Pharynx                (struct-worm-cv-008)
+    9. Crop                   (struct-worm-cv-009)
+   10. Gizzard                (struct-worm-cv-010)
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1400 500"
+     width="1400"
+     height="500"
+     role="img"
+     aria-label="Earthworm cardiovascular system dorsal longitudinal section">
+
+  <title>Earthworm Circulatory System — Dorsal Longitudinal Section</title>
+  <desc>Interactive SVG of an earthworm (Lumbricus terrestris) showing the closed circulatory system with dorsal and ventral blood vessels, five pairs of aortic arches, segmental vasculature, nerve cord, and associated digestive organs for comparative anatomy study.</desc>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DEFINITIONS — gradients, filters, patterns
+       ═══════════════════════════════════════════════════════════════ -->
+  <defs>
+    <!-- Dorsal vessel gradient (bright red — carries blood anteriorly) -->
+    <linearGradient id="grad-dorsal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E53935"/>
+      <stop offset="100%" stop-color="#B71C1C"/>
+    </linearGradient>
+
+    <!-- Ventral vessel gradient (indigo — carries blood posteriorly) -->
+    <linearGradient id="grad-ventral" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5C6BC0"/>
+      <stop offset="100%" stop-color="#283593"/>
+    </linearGradient>
+
+    <!-- Aortic arches gradient (purple — hearts) -->
+    <linearGradient id="grad-arch" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#AB47BC"/>
+      <stop offset="100%" stop-color="#7B1FA2"/>
+    </linearGradient>
+
+    <!-- Body wall gradient (brown) -->
+    <linearGradient id="grad-body" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#A1887F"/>
+      <stop offset="100%" stop-color="#795548"/>
+    </linearGradient>
+
+    <!-- Nervous system gradient (yellow) -->
+    <linearGradient id="grad-nerve" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFF176"/>
+      <stop offset="100%" stop-color="#FBC02D"/>
+    </linearGradient>
+
+    <!-- Digestive organs gradient (orange) -->
+    <linearGradient id="grad-digestive" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFCC80"/>
+      <stop offset="100%" stop-color="#EF6C00"/>
+    </linearGradient>
+
+    <!-- Muscular structures gradient (salmon) -->
+    <linearGradient id="grad-muscle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFAB91"/>
+      <stop offset="100%" stop-color="#FF7043"/>
+    </linearGradient>
+
+    <!-- Subneural vessel gradient (lighter blue) -->
+    <linearGradient id="grad-subneural" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#90CAF9"/>
+      <stop offset="100%" stop-color="#42A5F5"/>
+    </linearGradient>
+
+    <!-- Segmental vessel gradient (pinkish-red) -->
+    <linearGradient id="grad-segmental" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#EF9A9A"/>
+      <stop offset="100%" stop-color="#E57373"/>
+    </linearGradient>
+
+    <!-- Arrow marker for dorsal vessel (leftward / anterior flow) -->
+    <marker id="arrow-anterior" viewBox="0 0 10 10" refX="10" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse"
+            fill="#E53935">
+      <path d="M10,0 L0,5 L10,10 Z"/>
+    </marker>
+
+    <!-- Arrow marker for ventral vessel (rightward / posterior flow) -->
+    <marker id="arrow-posterior" viewBox="0 0 10 10" refX="0" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto"
+            fill="#283593">
+      <path d="M0,0 L10,5 L0,10 Z"/>
+    </marker>
+
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.18"/>
+    </filter>
+
+    <!-- Hover glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Clipping path for body interior -->
+    <clipPath id="body-clip">
+      <path d="M60,180 Q30,250 60,320 L1340,320 Q1370,250 1340,180 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BACKGROUND — Warm parchment background
+       ═══════════════════════════════════════════════════════════════ -->
+  <rect width="1400" height="500" fill="#FFF8E1" rx="8"/>
+
+  <!-- Title -->
+  <text x="700" y="36" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="700"
+        fill="#4E342E" letter-spacing="0.6">
+    EARTHWORM CIRCULATORY SYSTEM — DORSAL LONGITUDINAL SECTION
+  </text>
+
+  <!-- Subtitle -->
+  <text x="700" y="56" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="400"
+        fill="#8D6E63" letter-spacing="0.3">
+    Lumbricus terrestris  ·  Closed circulatory system  ·  Annelida: Oligochaeta
+  </text>
+
+  <!-- Orientation labels -->
+  <text x="55" y="260" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700"
+        fill="#6D4C41" writing-mode="tb" letter-spacing="2">
+    ANTERIOR
+  </text>
+  <text x="1375" y="230" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700"
+        fill="#6D4C41" writing-mode="tb" letter-spacing="2">
+    POSTERIOR
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BODY WALL — Elongated worm outline with segmentation
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Outer body wall -->
+  <path d="M90,250
+           Q90,160 140,140 L1290,140
+           Q1360,140 1360,250
+           Q1360,360 1290,360 L140,360
+           Q90,360 90,250 Z"
+        fill="url(#grad-body)" fill-opacity="0.18"
+        stroke="url(#grad-body)" stroke-width="2.5"
+        filter="url(#shadow)"/>
+
+  <!-- Inner body wall (coelom boundary) -->
+  <path d="M105,250
+           Q105,175 150,158 L1280,158
+           Q1345,158 1345,250
+           Q1345,342 1280,342 L150,342
+           Q105,342 105,250 Z"
+        fill="none"
+        stroke="#A1887F" stroke-width="1" stroke-opacity="0.5"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SEGMENTATION — Dashed vertical septa lines
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="segmentation" opacity="0.35" stroke="#8D6E63" stroke-width="0.8" stroke-dasharray="4 3">
+    <!-- Segments from anterior to posterior, ~50px apart -->
+    <!-- Segment boundaries (septa) -->
+    <line x1="150" y1="155" x2="150" y2="345"/>
+    <line x1="200" y1="150" x2="200" y2="350"/>
+    <line x1="250" y1="148" x2="250" y2="352"/>
+    <line x1="300" y1="145" x2="300" y2="355"/>
+    <line x1="350" y1="143" x2="350" y2="357"/>
+    <line x1="400" y1="142" x2="400" y2="358"/>
+    <line x1="450" y1="141" x2="450" y2="359"/>
+    <line x1="500" y1="140" x2="500" y2="360"/>
+    <line x1="550" y1="140" x2="550" y2="360"/>
+    <line x1="600" y1="140" x2="600" y2="360"/>
+    <line x1="650" y1="140" x2="650" y2="360"/>
+    <line x1="700" y1="140" x2="700" y2="360"/>
+    <line x1="750" y1="140" x2="750" y2="360"/>
+    <line x1="800" y1="140" x2="800" y2="360"/>
+    <line x1="850" y1="140" x2="850" y2="360"/>
+    <line x1="900" y1="140" x2="900" y2="360"/>
+    <line x1="950" y1="140" x2="950" y2="360"/>
+    <line x1="1000" y1="140" x2="1000" y2="360"/>
+    <line x1="1050" y1="140" x2="1050" y2="360"/>
+    <line x1="1100" y1="140" x2="1100" y2="360"/>
+    <line x1="1150" y1="140" x2="1150" y2="360"/>
+    <line x1="1200" y1="140" x2="1200" y2="360"/>
+    <line x1="1250" y1="142" x2="1250" y2="358"/>
+    <line x1="1300" y1="145" x2="1300" y2="355"/>
+  </g>
+
+  <!-- Segment number labels (select segments) -->
+  <g font-family="Inter, system-ui, sans-serif" font-size="8" fill="#A1887F" text-anchor="middle" opacity="0.6">
+    <text x="125" y="375">1</text>
+    <text x="175" y="375">2</text>
+    <text x="225" y="375">3</text>
+    <text x="275" y="375">4</text>
+    <text x="325" y="375">5</text>
+    <text x="375" y="375">6</text>
+    <text x="425" y="375">7</text>
+    <text x="475" y="375">8</text>
+    <text x="525" y="375">9</text>
+    <text x="575" y="375">10</text>
+    <text x="625" y="375">11</text>
+    <text x="675" y="375">12</text>
+    <text x="725" y="375">13</text>
+    <text x="775" y="375">14</text>
+    <text x="825" y="375">15</text>
+    <text x="875" y="375">16</text>
+    <text x="925" y="375">17</text>
+    <text x="975" y="375">18</text>
+    <text x="1025" y="375">19</text>
+    <text x="1075" y="375">20</text>
+    <text x="1125" y="375">21</text>
+    <text x="1175" y="375">22</text>
+    <text x="1225" y="375">23</text>
+    <text x="1275" y="375">24</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DIGESTIVE TUBE — Runs through center of body
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Background digestive tract (simple tube through segments 6-24+) -->
+  <path d="M650,250 L1320,250"
+        fill="none" stroke="#FFCC80" stroke-width="22" stroke-opacity="0.2"
+        stroke-linecap="round"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 8 — PHARYNX (segments 1-5)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="pharynx"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-008"
+     cursor="pointer">
+    <!-- Pharynx — muscular swelling in anterior segments -->
+    <path d="M110,250
+             Q110,215 145,205
+             L300,200
+             Q340,200 340,220
+             L340,280
+             Q340,300 300,300
+             L145,295
+             Q110,285 110,250 Z"
+          fill="url(#grad-digestive)" fill-opacity="0.65"
+          stroke="#EF6C00" stroke-width="1.8"/>
+    <!-- Muscular striations on pharynx -->
+    <g stroke="#EF6C00" stroke-width="0.6" stroke-opacity="0.4">
+      <line x1="140" y1="210" x2="140" y2="290"/>
+      <line x1="170" y1="208" x2="170" y2="292"/>
+      <line x1="200" y1="205" x2="200" y2="295"/>
+      <line x1="230" y1="204" x2="230" y2="296"/>
+      <line x1="260" y1="203" x2="260" y2="297"/>
+      <line x1="290" y1="202" x2="290" y2="298"/>
+      <line x1="320" y1="205" x2="320" y2="295"/>
+    </g>
+    <!-- Label -->
+    <text x="225" y="256" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600"
+          fill="#BF360C" opacity="0.8">Pharynx</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 9 — CROP (segments 15-16)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="crop"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-009"
+     cursor="pointer">
+    <!-- Crop — thin-walled expandable food storage -->
+    <path d="M790,250
+             Q790,210 810,202
+             L855,198
+             Q880,196 890,210
+             L890,290
+             Q880,304 855,302
+             L810,298
+             Q790,290 790,250 Z"
+          fill="url(#grad-digestive)" fill-opacity="0.55"
+          stroke="#EF6C00" stroke-width="1.6"/>
+    <!-- Thin walls indicated by lighter fill -->
+    <ellipse cx="840" cy="250" rx="28" ry="38"
+             fill="#FFCC80" fill-opacity="0.3" stroke="none"/>
+    <!-- Label -->
+    <text x="840" y="254" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600"
+          fill="#BF360C" opacity="0.8">Crop</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 10 — GIZZARD (segments 17-18)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="gizzard"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-010"
+     cursor="pointer">
+    <!-- Gizzard — thick-walled muscular grinding organ -->
+    <path d="M900,250
+             Q900,200 930,192
+             L970,188
+             Q1000,186 1005,208
+             L1005,292
+             Q1000,314 970,312
+             L930,308
+             Q900,300 900,250 Z"
+          fill="url(#grad-muscle)" fill-opacity="0.75"
+          stroke="#E64A19" stroke-width="2.2"/>
+    <!-- Thick muscular wall lines -->
+    <g stroke="#D84315" stroke-width="1" stroke-opacity="0.5">
+      <path d="M910,210 Q920,250 910,290" fill="none"/>
+      <path d="M930,200 Q940,250 930,300" fill="none"/>
+      <path d="M950,196 Q960,250 950,304" fill="none"/>
+      <path d="M970,194 Q980,250 970,306" fill="none"/>
+      <path d="M990,200 Q1000,250 990,300" fill="none"/>
+    </g>
+    <!-- Label -->
+    <text x="952" y="254" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700"
+          fill="#BF360C" opacity="0.9">Gizzard</text>
+  </g>
+
+  <!-- Esophagus connection between pharynx and crop -->
+  <path d="M340,250 L790,250"
+        fill="none" stroke="#FFCC80" stroke-width="16" stroke-opacity="0.25"
+        stroke-linecap="round"/>
+  <path d="M340,250 L790,250"
+        fill="none" stroke="#EF6C00" stroke-width="0.8" stroke-opacity="0.3"
+        stroke-dasharray="6 4"/>
+
+  <!-- Intestine continuing from gizzard posteriorly -->
+  <path d="M1005,250 L1320,250"
+        fill="none" stroke="#FFCC80" stroke-width="20" stroke-opacity="0.2"
+        stroke-linecap="round"/>
+  <path d="M1005,242 L1320,242" fill="none" stroke="#EF6C00" stroke-width="0.6" stroke-opacity="0.3"/>
+  <path d="M1005,258 L1320,258" fill="none" stroke="#EF6C00" stroke-width="0.6" stroke-opacity="0.3"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 1 — DORSAL BLOOD VESSEL
+       Runs along the top, carries blood ANTERIORLY (leftward)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="dorsal-vessel"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-001"
+     cursor="pointer">
+    <!-- Main dorsal vessel -->
+    <path d="M120,185 L1320,175"
+          fill="none" stroke="url(#grad-dorsal)" stroke-width="7"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <!-- Vessel wall highlight -->
+    <path d="M120,183 L1320,173"
+          fill="none" stroke="#EF9A9A" stroke-width="1.2" stroke-opacity="0.5"/>
+    <!-- Pulsation bumps (peristaltic contractions) -->
+    <g fill="#E53935" fill-opacity="0.3">
+      <ellipse cx="300" cy="182" rx="15" ry="4"/>
+      <ellipse cx="500" cy="179" rx="15" ry="4"/>
+      <ellipse cx="700" cy="178" rx="15" ry="4"/>
+      <ellipse cx="900" cy="177" rx="15" ry="4"/>
+      <ellipse cx="1100" cy="176" rx="15" ry="4"/>
+    </g>
+
+    <!-- Flow direction arrows (anterior / leftward) -->
+    <g fill="#E53935" opacity="0.7">
+      <!-- Arrow at x=250 -->
+      <polygon points="240,178 260,185 260,173"/>
+      <!-- Arrow at x=600 -->
+      <polygon points="590,176 610,182 610,170"/>
+      <!-- Arrow at x=950 -->
+      <polygon points="940,175 960,181 960,169"/>
+      <!-- Arrow at x=1200 -->
+      <polygon points="1190,174 1210,180 1210,168"/>
+    </g>
+
+    <!-- Label -->
+    <text x="710" y="167" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700"
+          fill="#C62828">
+      Dorsal Blood Vessel
+    </text>
+    <!-- Flow direction label -->
+    <text x="710" y="155" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="8" font-weight="400"
+          fill="#E53935" opacity="0.7">
+      ← blood flows anteriorly
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 2 — VENTRAL BLOOD VESSEL
+       Runs along the bottom, carries blood POSTERIORLY (rightward)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="ventral-vessel"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-002"
+     cursor="pointer">
+    <!-- Main ventral vessel -->
+    <path d="M120,310 L1320,315"
+          fill="none" stroke="url(#grad-ventral)" stroke-width="6"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <!-- Vessel wall highlight -->
+    <path d="M120,312 L1320,317"
+          fill="none" stroke="#9FA8DA" stroke-width="1" stroke-opacity="0.5"/>
+
+    <!-- Flow direction arrows (posterior / rightward) -->
+    <g fill="#283593" opacity="0.7">
+      <!-- Arrow at x=250 -->
+      <polygon points="260,310 240,305 240,317"/>
+      <!-- Arrow at x=600 -->
+      <polygon points="610,312 590,306 590,318"/>
+      <!-- Arrow at x=950 -->
+      <polygon points="960,314 940,308 940,320"/>
+      <!-- Arrow at x=1200 -->
+      <polygon points="1210,315 1190,309 1190,321"/>
+    </g>
+
+    <!-- Label -->
+    <text x="710" y="340" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700"
+          fill="#1A237E">
+      Ventral Blood Vessel
+    </text>
+    <!-- Flow direction label -->
+    <text x="710" y="352" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="8" font-weight="400"
+          fill="#283593" opacity="0.7">
+      blood flows posteriorly →
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 3 — AORTIC ARCHES (5 pairs, segments 7–11)
+       Connect dorsal vessel to ventral vessel
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="aortic-arches"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-003"
+     cursor="pointer">
+    <!-- Arch 1 (Segment 7, x≈400) -->
+    <path d="M405,185 Q385,210 385,250 Q385,290 405,310"
+          fill="none" stroke="url(#grad-arch)" stroke-width="6"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <!-- Pulsation indicator -->
+    <circle cx="385" cy="250" r="5" fill="#AB47BC" fill-opacity="0.25"/>
+
+    <!-- Arch 2 (Segment 8, x≈450) -->
+    <path d="M455,185 Q435,210 435,250 Q435,290 455,310"
+          fill="none" stroke="url(#grad-arch)" stroke-width="6"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <circle cx="435" cy="250" r="5" fill="#AB47BC" fill-opacity="0.25"/>
+
+    <!-- Arch 3 (Segment 9, x≈500) -->
+    <path d="M505,184 Q485,210 485,250 Q485,290 505,310"
+          fill="none" stroke="url(#grad-arch)" stroke-width="6.5"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <circle cx="485" cy="250" r="6" fill="#AB47BC" fill-opacity="0.3"/>
+
+    <!-- Arch 4 (Segment 10, x≈550) -->
+    <path d="M555,184 Q535,210 535,250 Q535,290 555,310"
+          fill="none" stroke="url(#grad-arch)" stroke-width="6"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <circle cx="535" cy="250" r="5" fill="#AB47BC" fill-opacity="0.25"/>
+
+    <!-- Arch 5 (Segment 11, x≈600) -->
+    <path d="M605,183 Q585,210 585,250 Q585,290 605,311"
+          fill="none" stroke="url(#grad-arch)" stroke-width="6"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <circle cx="585" cy="250" r="5" fill="#AB47BC" fill-opacity="0.25"/>
+
+    <!-- Flow arrows on arches (downward from dorsal to ventral) -->
+    <g fill="#7B1FA2" opacity="0.6">
+      <polygon points="385,260 380,250 390,250"/>
+      <polygon points="435,260 430,250 440,250"/>
+      <polygon points="485,262 480,252 490,252"/>
+      <polygon points="535,260 530,250 540,250"/>
+      <polygon points="585,260 580,250 590,250"/>
+    </g>
+
+    <!-- Label for arches group -->
+    <text x="485" y="135" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700"
+          fill="#6A1B9A">
+      Aortic Arches (Hearts)
+    </text>
+    <text x="485" y="147" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="8" font-weight="400"
+          fill="#9C27B0" opacity="0.7">
+      5 pairs · segments 7–11
+    </text>
+    <!-- Bracket line connecting label to arches -->
+    <path d="M395,150 L395,155 L575,155 L575,150"
+          fill="none" stroke="#9C27B0" stroke-width="0.8" opacity="0.4"/>
+    <line x1="485" y1="155" x2="485" y2="165" stroke="#9C27B0" stroke-width="0.8" opacity="0.4"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 7 — SEGMENTAL VESSELS
+       Smaller vessels connecting dorsal and ventral in each segment
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="segmental-vessels"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-007"
+     cursor="pointer">
+    <!-- Segmental vessels in posterior segments (thin connections) -->
+    <g fill="none" stroke="url(#grad-segmental)" stroke-width="1.8" stroke-opacity="0.6">
+      <path d="M700,178 Q690,210 690,250 Q690,290 700,313"/>
+      <path d="M800,177 Q790,210 790,250 Q790,290 800,314"/>
+      <path d="M900,177 Q890,210 890,250 Q890,290 900,314"/>
+      <path d="M1000,176 Q990,210 990,250 Q990,290 1000,315"/>
+      <path d="M1100,176 Q1090,210 1090,250 Q1090,290 1100,315"/>
+      <path d="M1200,175 Q1190,210 1190,250 Q1190,290 1200,315"/>
+    </g>
+    <!-- Capillary network indication (tiny dots) -->
+    <g fill="#E57373" fill-opacity="0.3">
+      <circle cx="692" cy="220" r="2"/>
+      <circle cx="688" cy="280" r="2"/>
+      <circle cx="792" cy="220" r="2"/>
+      <circle cx="788" cy="280" r="2"/>
+      <circle cx="892" cy="220" r="2"/>
+      <circle cx="888" cy="280" r="2"/>
+      <circle cx="992" cy="220" r="2"/>
+      <circle cx="988" cy="280" r="2"/>
+      <circle cx="1092" cy="220" r="2"/>
+      <circle cx="1088" cy="280" r="2"/>
+    </g>
+
+    <!-- Label -->
+    <text x="1150" y="167" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="600"
+          fill="#C62828" opacity="0.7">
+      Segmental Vessels
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 5 — VENTRAL NERVE CORD
+       Runs below the ventral vessel with segmental ganglia
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="ventral-nerve-cord"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-005"
+     cursor="pointer">
+    <!-- Main nerve cord -->
+    <path d="M145,330 L1320,335"
+          fill="none" stroke="url(#grad-nerve)" stroke-width="4.5"
+          stroke-linecap="round" filter="url(#shadow)"/>
+    <!-- Segmental ganglia (bumps along the cord) -->
+    <g fill="#FBC02D" fill-opacity="0.7" stroke="#F9A825" stroke-width="0.8">
+      <ellipse cx="175" cy="330" rx="8" ry="5"/>
+      <ellipse cx="225" cy="330" rx="8" ry="5"/>
+      <ellipse cx="275" cy="331" rx="8" ry="5"/>
+      <ellipse cx="325" cy="331" rx="8" ry="5"/>
+      <ellipse cx="375" cy="331" rx="8" ry="5"/>
+      <ellipse cx="425" cy="332" rx="8" ry="5"/>
+      <ellipse cx="475" cy="332" rx="8" ry="5"/>
+      <ellipse cx="525" cy="332" rx="8" ry="5"/>
+      <ellipse cx="575" cy="333" rx="8" ry="5"/>
+      <ellipse cx="625" cy="333" rx="8" ry="5"/>
+      <ellipse cx="675" cy="333" rx="8" ry="5"/>
+      <ellipse cx="725" cy="334" rx="8" ry="5"/>
+      <ellipse cx="775" cy="334" rx="8" ry="5"/>
+      <ellipse cx="825" cy="334" rx="8" ry="5"/>
+      <ellipse cx="875" cy="334" rx="8" ry="5"/>
+      <ellipse cx="925" cy="335" rx="8" ry="5"/>
+      <ellipse cx="975" cy="335" rx="8" ry="5"/>
+      <ellipse cx="1025" cy="335" rx="8" ry="5"/>
+      <ellipse cx="1075" cy="335" rx="8" ry="5"/>
+      <ellipse cx="1125" cy="335" rx="8" ry="5"/>
+      <ellipse cx="1175" cy="335" rx="8" ry="5"/>
+      <ellipse cx="1225" cy="335" rx="8" ry="5"/>
+      <ellipse cx="1275" cy="335" rx="8" ry="5"/>
+    </g>
+    <!-- Label -->
+    <text x="950" y="360" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="600"
+          fill="#F57F17" opacity="0.85">
+      Ventral Nerve Cord (with segmental ganglia)
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 4 — SUBNEURAL VESSEL
+       Thin vessel running beneath the nerve cord
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="subneural-vessel"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-004"
+     cursor="pointer">
+    <!-- Subneural vessel (thin, below nerve cord) -->
+    <path d="M160,342 L1310,347"
+          fill="none" stroke="url(#grad-subneural)" stroke-width="2.5"
+          stroke-linecap="round"/>
+    <!-- Delicate vessel wall -->
+    <path d="M160,344 L1310,349"
+          fill="none" stroke="#64B5F6" stroke-width="0.5" stroke-opacity="0.4"/>
+    <!-- Label -->
+    <text x="750" y="365" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="500"
+          fill="#1565C0" opacity="0.75">
+      Subneural Vessel
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 6 — CEREBRAL GANGLIA (Brain)
+       Pair of lobes at the anterior end, dorsal to pharynx
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="cerebral-ganglia"
+     data-system="cardiovascular"
+     data-structure-id="struct-worm-cv-006"
+     cursor="pointer">
+    <!-- Left lobe -->
+    <ellipse cx="115" cy="195" rx="18" ry="14"
+             fill="url(#grad-nerve)" fill-opacity="0.8"
+             stroke="#F9A825" stroke-width="1.5" filter="url(#shadow)"/>
+    <!-- Right lobe -->
+    <ellipse cx="115" cy="225" rx="18" ry="14"
+             fill="url(#grad-nerve)" fill-opacity="0.8"
+             stroke="#F9A825" stroke-width="1.5" filter="url(#shadow)"/>
+    <!-- Connection between lobes (commissure) -->
+    <path d="M115,209 L115,211"
+          stroke="#FBC02D" stroke-width="3" stroke-linecap="round"/>
+    <!-- Circumpharyngeal connectives (connecting brain to ventral nerve cord) -->
+    <path d="M120,232 Q135,280 145,330"
+          fill="none" stroke="#FBC02D" stroke-width="2" stroke-opacity="0.6"
+          stroke-dasharray="3 2"/>
+    <path d="M110,232 Q100,280 145,330"
+          fill="none" stroke="#FBC02D" stroke-width="2" stroke-opacity="0.6"
+          stroke-dasharray="3 2"/>
+
+    <!-- Label -->
+    <text x="115" y="175" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700"
+          fill="#F57F17">
+      Cerebral
+    </text>
+    <text x="115" y="165" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="700"
+          fill="#F57F17">
+      Ganglia
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LEGEND — Color key for all structures
+       ═══════════════════════════════════════════════════════════════ -->
+  <g transform="translate(30, 395)">
+    <text x="0" y="12" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700" fill="#4E342E">
+      LEGEND
+    </text>
+    <!-- Row 1 -->
+    <rect x="0" y="20" width="14" height="8" rx="2" fill="#E53935"/>
+    <text x="20" y="28" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Dorsal Vessel</text>
+
+    <rect x="130" y="20" width="14" height="8" rx="2" fill="#3F51B5"/>
+    <text x="150" y="28" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Ventral Vessel</text>
+
+    <rect x="270" y="20" width="14" height="8" rx="2" fill="#AB47BC"/>
+    <text x="290" y="28" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Aortic Arches</text>
+
+    <rect x="400" y="20" width="14" height="8" rx="2" fill="#42A5F5"/>
+    <text x="420" y="28" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Subneural Vessel</text>
+
+    <rect x="550" y="20" width="14" height="8" rx="2" fill="#FBC02D"/>
+    <text x="570" y="28" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Nerve Cord / Ganglia</text>
+
+    <!-- Row 2 -->
+    <rect x="0" y="38" width="14" height="8" rx="2" fill="#E57373"/>
+    <text x="20" y="46" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Segmental Vessels</text>
+
+    <rect x="130" y="38" width="14" height="8" rx="2" fill="#EF6C00"/>
+    <text x="150" y="46" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Pharynx (digestive)</text>
+
+    <rect x="270" y="38" width="14" height="8" rx="2" fill="#FFCC80"/>
+    <text x="290" y="46" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Crop (storage)</text>
+
+    <rect x="400" y="38" width="14" height="8" rx="2" fill="#FF7043"/>
+    <text x="420" y="46" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Gizzard (muscular)</text>
+
+    <rect x="550" y="38" width="14" height="8" rx="2" fill="#A1887F"/>
+    <text x="570" y="46" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#4E342E">Body Wall</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       CIRCULATION DIAGRAM — Small schematic showing closed loop
+       ═══════════════════════════════════════════════════════════════ -->
+  <g transform="translate(1050, 395)">
+    <text x="0" y="12" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" fill="#4E342E">
+      CIRCULATION PATTERN
+    </text>
+    <!-- Mini dorsal vessel -->
+    <line x1="20" y1="28" x2="120" y2="28" stroke="#E53935" stroke-width="3"/>
+    <polygon points="25,25 15,28 25,31" fill="#E53935"/>
+    <text x="70" y="24" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#E53935">dorsal</text>
+    <!-- Mini ventral vessel -->
+    <line x1="20" y1="48" x2="120" y2="48" stroke="#283593" stroke-width="3"/>
+    <polygon points="115,45 125,48 115,51" fill="#283593"/>
+    <text x="70" y="58" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#283593">ventral</text>
+    <!-- Mini arches -->
+    <path d="M30,28 Q15,38 30,48" fill="none" stroke="#AB47BC" stroke-width="2"/>
+    <path d="M50,28 Q35,38 50,48" fill="none" stroke="#AB47BC" stroke-width="2"/>
+    <text x="20" y="42" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="6" fill="#7B1FA2">arches</text>
+    <!-- Mini segmental -->
+    <path d="M90,28 Q100,38 90,48" fill="none" stroke="#E57373" stroke-width="1"/>
+    <path d="M110,28 Q120,38 110,48" fill="none" stroke="#E57373" stroke-width="1"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOOTER — Attribution and classification
+       ═══════════════════════════════════════════════════════════════ -->
+  <text x="700" y="490" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BCAAA4">
+    AnatoView · Invertebrate Comparative Anatomy · Closed Circulatory System · Segmented Body Plan (Annelida)
+  </text>
+
+</svg>

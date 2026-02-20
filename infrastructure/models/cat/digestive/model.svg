@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AnatoView - Cat Digestive System (Ventral View)
+  Anatomical model SVG for interactive dissection lab.
+
+  Orientation: Ventral view of open abdomen.
+  Cranial (head) = top, Caudal (tail) = bottom.
+
+  Each interactive structure has:
+    id          = slug matching svgElementId in the database
+    data-system = "digestive"
+    data-structure-id = UUID from prisma/seed.ts
+
+  15 structures total, organized in rendering order (back-to-front):
+    Peritoneum -> Large intestine -> Small intestine -> Stomach/Esophagus -> Liver/Gallbladder/Pancreas -> Spleen -> Sphincter
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 900"
+     width="1200"
+     height="900"
+     role="img"
+     aria-label="Cat digestive system ventral view">
+
+  <title>Cat Digestive System - Ventral View</title>
+  <desc>Interactive SVG of a domestic cat digestive system showing the gastrointestinal tract, accessory organs, and peritoneal structures for pre-veterinary anatomy study.</desc>
+
+  <!-- ===============================================================
+       DEFINITIONS - gradients, filters
+       =============================================================== -->
+  <defs>
+    <!-- Parenchymal organ gradient (liver, spleen) -->
+    <linearGradient id="grad-organ" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8D6E63"/>
+      <stop offset="100%" stop-color="#5D4037"/>
+    </linearGradient>
+
+    <!-- GI mucosa / stomach lining gradient -->
+    <linearGradient id="grad-mucosa" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F48FB1"/>
+      <stop offset="100%" stop-color="#E91E63"/>
+    </linearGradient>
+
+    <!-- Bile system gradient (gallbladder, bile duct) -->
+    <linearGradient id="grad-bile" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#AED581"/>
+      <stop offset="100%" stop-color="#558B2F"/>
+    </linearGradient>
+
+    <!-- Serosal / peritoneal membrane gradient -->
+    <linearGradient id="grad-serosa" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFE0B2"/>
+      <stop offset="100%" stop-color="#FFB74D"/>
+    </linearGradient>
+
+    <!-- Small intestine gradient -->
+    <linearGradient id="grad-small-int" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8BBD0"/>
+      <stop offset="100%" stop-color="#EC407A"/>
+    </linearGradient>
+
+    <!-- Large intestine gradient -->
+    <linearGradient id="grad-large-int" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#CE93D8"/>
+      <stop offset="100%" stop-color="#8E24AA"/>
+    </linearGradient>
+
+    <!-- Pancreas gradient -->
+    <linearGradient id="grad-pancreas" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFCC80"/>
+      <stop offset="100%" stop-color="#EF6C00"/>
+    </linearGradient>
+
+    <!-- Spleen gradient -->
+    <linearGradient id="grad-spleen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B71C1C"/>
+      <stop offset="100%" stop-color="#880E4F"/>
+    </linearGradient>
+
+    <!-- Esophagus gradient -->
+    <linearGradient id="grad-esophagus" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFAB91"/>
+      <stop offset="100%" stop-color="#D84315"/>
+    </linearGradient>
+
+    <!-- Sphincter gradient -->
+    <linearGradient id="grad-sphincter" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF8A65"/>
+      <stop offset="100%" stop-color="#BF360C"/>
+    </linearGradient>
+
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+
+    <!-- Hover glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- ===============================================================
+       BACKGROUND - Abdominal cavity outline
+       =============================================================== -->
+  <rect width="1200" height="900" fill="#FFFDE7" rx="8"/>
+
+  <!-- Abdominal wall outline -->
+  <path d="M300,80 Q250,200 240,400 Q235,550 260,680 Q300,780 450,830
+           Q550,855 600,855 Q650,855 750,830 Q900,780 940,680
+           Q965,550 960,400 Q950,200 900,80 Z"
+        fill="none" stroke="#D7CCC8" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.4"/>
+
+  <!-- Diaphragm (cranial boundary) -->
+  <path d="M280,120 Q450,75 600,70 Q750,75 920,120"
+        fill="none" stroke="#BCAAA4" stroke-width="2" stroke-dasharray="6 3" opacity="0.5"/>
+  <text x="600" y="60" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#8D6E63" opacity="0.6">DIAPHRAGM</text>
+
+  <!-- Title label -->
+  <text x="600" y="38" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" fill="#4E342E" letter-spacing="0.5">
+    FELINE DIGESTIVE SYSTEM - VENTRAL VIEW
+  </text>
+
+  <!-- ===============================================================
+       LAYER 1 - PERITONEAL STRUCTURES (deepest)
+       =============================================================== -->
+
+  <!-- Greater Omentum - apron-like fold covering intestines -->
+  <g id="greater-omentum"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-013"
+     cursor="pointer">
+    <path d="M380,340 Q360,400 370,500 Q380,580 420,650 Q500,710 600,720
+             Q700,710 780,650 Q820,580 830,500 Q840,400 820,340
+             Q760,320 600,310 Q440,320 380,340 Z"
+          fill="url(#grad-serosa)" stroke="#FFB74D" stroke-width="1" opacity="0.25"/>
+    <path d="M380,340 Q360,400 370,500 Q380,580 420,650 Q500,710 600,720
+             Q700,710 780,650 Q820,580 830,500 Q840,400 820,340
+             Q760,320 600,310 Q440,320 380,340 Z"
+          fill="none" stroke="none" stroke-width="20" opacity="0" pointer-events="fill"/>
+    <text x="600" y="700" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#E65100" font-style="italic">Greater Omentum</text>
+  </g>
+
+  <!-- Mesentery - fan-shaped fold suspending intestines -->
+  <g id="mesentery"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-014"
+     cursor="pointer">
+    <path d="M580,280 Q520,350 480,450 Q460,520 470,580 Q490,600 530,590
+             Q570,570 600,500 Q630,430 650,380 Q660,330 640,290 Q610,270 580,280 Z"
+          fill="url(#grad-serosa)" stroke="#FFB74D" stroke-width="1" opacity="0.35"/>
+    <text x="540" y="480" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#E65100" font-style="italic" transform="rotate(-30 540 480)">Mesentery</text>
+  </g>
+
+  <!-- ===============================================================
+       LAYER 2 - LARGE INTESTINE
+       =============================================================== -->
+
+  <!-- Rectum - terminal segment -->
+  <g id="rectum"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-012"
+     cursor="pointer">
+    <path d="M600,730 Q598,760 600,790 Q602,810 600,830"
+          fill="none" stroke="url(#grad-large-int)" stroke-width="18" stroke-linecap="round" opacity="0.9"/>
+    <text x="625" y="800" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#6A1B9A" font-weight="500">Rectum</text>
+  </g>
+
+  <!-- Colon - ascending, transverse, descending -->
+  <g id="colon"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-011"
+     cursor="pointer">
+    <!-- Ascending colon (right side) -->
+    <path d="M780,650 Q785,580 780,510 Q775,460 770,420"
+          fill="none" stroke="url(#grad-large-int)" stroke-width="20" stroke-linecap="round" opacity="0.85"/>
+    <!-- Transverse colon -->
+    <path d="M770,420 Q700,400 600,395 Q500,400 430,420"
+          fill="none" stroke="url(#grad-large-int)" stroke-width="20" stroke-linecap="round" opacity="0.85"/>
+    <!-- Descending colon (left side) -->
+    <path d="M430,420 Q425,480 430,550 Q440,620 470,680 Q530,720 600,730"
+          fill="none" stroke="url(#grad-large-int)" stroke-width="20" stroke-linecap="round" opacity="0.85"/>
+    <text x="600" y="385" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#6A1B9A" font-weight="600">Colon</text>
+  </g>
+
+  <!-- Cecum - small blind pouch at ileocecal junction -->
+  <g id="cecum"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-010"
+     cursor="pointer">
+    <path d="M780,650 Q810,660 830,680 Q840,700 830,720 Q810,730 790,720 Q775,700 780,650 Z"
+          fill="url(#grad-large-int)" stroke="#7B1FA2" stroke-width="1.5" opacity="0.9"/>
+    <text x="850" y="700" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#6A1B9A" font-weight="500">Cecum</text>
+  </g>
+
+  <!-- ===============================================================
+       LAYER 3 - SMALL INTESTINE
+       =============================================================== -->
+
+  <!-- Ileum - distal segment, connects to cecum -->
+  <g id="ileum"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-009"
+     cursor="pointer">
+    <path d="M700,600 Q720,620 750,640 Q770,650 780,650"
+          fill="none" stroke="url(#grad-small-int)" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+    <path d="M650,560 Q680,575 700,600"
+          fill="none" stroke="url(#grad-small-int)" stroke-width="12" stroke-linecap="round" opacity="0.8"/>
+    <text x="740" y="615" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#AD1457" font-style="italic">Ileum</text>
+  </g>
+
+  <!-- Jejunum - middle segment, coiled loops -->
+  <g id="jejunum"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-008"
+     cursor="pointer">
+    <path d="M530,450 Q490,470 470,510 Q460,550 490,570 Q520,580 560,560
+             Q600,540 620,510 Q640,480 630,450 Q610,430 580,440 Q550,455 530,480
+             Q515,510 530,540 Q550,560 580,550 Q610,535 630,510"
+          fill="none" stroke="url(#grad-small-int)" stroke-width="11" stroke-linecap="round" opacity="0.8"/>
+    <path d="M630,510 Q645,530 650,560"
+          fill="none" stroke="url(#grad-small-int)" stroke-width="11" stroke-linecap="round" opacity="0.8"/>
+    <text x="500" y="525" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#AD1457" font-weight="600">Jejunum</text>
+  </g>
+
+  <!-- Duodenum - first segment, C-shaped curve around pancreas -->
+  <g id="duodenum"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-007"
+     cursor="pointer">
+    <path d="M560,310 Q580,330 600,360 Q620,400 630,430 Q635,450 620,460
+             Q590,470 560,460 Q540,450 530,440 Q520,430 530,450"
+          fill="none" stroke="url(#grad-small-int)" stroke-width="13" stroke-linecap="round" opacity="0.85"/>
+    <text x="645" y="440" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#AD1457" font-weight="600">Duodenum</text>
+  </g>
+
+  <!-- ===============================================================
+       LAYER 4 - STOMACH AND ESOPHAGUS
+       =============================================================== -->
+
+  <!-- Esophagus - tube from diaphragm to stomach -->
+  <g id="esophagus"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-001"
+     cursor="pointer">
+    <path d="M530,90 Q525,120 520,160 Q518,190 520,220"
+          fill="none" stroke="url(#grad-esophagus)" stroke-width="16" stroke-linecap="round" opacity="0.9"/>
+    <path d="M530,90 Q525,120 520,160 Q518,190 520,220"
+          fill="none" stroke="none" stroke-width="26" opacity="0" pointer-events="stroke"/>
+    <text x="548" y="150" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#BF360C" font-weight="600">Esophagus</text>
+  </g>
+
+  <!-- Stomach - J-shaped muscular organ -->
+  <g id="stomach"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-002"
+     cursor="pointer">
+    <path d="M520,220 Q480,230 440,260 Q400,300 390,340 Q385,380 400,410
+             Q420,440 460,450 Q500,455 540,440 Q570,420 580,380
+             Q585,340 570,310 Q555,290 540,280 Q530,270 520,260 Z"
+          fill="url(#grad-mucosa)" stroke="#C2185B" stroke-width="2" filter="url(#shadow)" opacity="0.9"/>
+    <!-- Rugae (stomach folds) -->
+    <path d="M440,290 Q480,300 510,290" fill="none" stroke="#F8BBD0" stroke-width="1" opacity="0.5"/>
+    <path d="M420,330 Q470,340 520,330" fill="none" stroke="#F8BBD0" stroke-width="1" opacity="0.5"/>
+    <path d="M430,370 Q480,380 530,370" fill="none" stroke="#F8BBD0" stroke-width="1" opacity="0.5"/>
+    <text x="470" y="350" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#fff" font-weight="700">STOMACH</text>
+  </g>
+
+  <!-- Pyloric Sphincter - gateway from stomach to duodenum -->
+  <g id="pyloric-sphincter"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-015"
+     cursor="pointer">
+    <ellipse cx="560" cy="310" rx="14" ry="8" fill="url(#grad-sphincter)" stroke="#BF360C" stroke-width="2" transform="rotate(20 560 310)"/>
+    <path d="M552,305 Q560,300 568,305" fill="none" stroke="#FF5722" stroke-width="1.5"/>
+    <path d="M552,315 Q560,320 568,315" fill="none" stroke="#FF5722" stroke-width="1.5"/>
+    <text x="580" y="303" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BF360C" font-weight="600">PYLORUS</text>
+  </g>
+
+  <!-- ===============================================================
+       LAYER 5 - LIVER, GALLBLADDER, PANCREAS
+       =============================================================== -->
+
+  <!-- Liver - large multi-lobed organ under diaphragm -->
+  <g id="liver"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-003"
+     cursor="pointer">
+    <!-- Left lobes -->
+    <path d="M350,120 Q320,140 310,170 Q305,200 320,230 Q340,250 380,260
+             Q420,265 460,255 Q490,245 510,230 Q520,220 520,200
+             Q520,170 510,140 Q490,120 450,115 Q400,110 350,120 Z"
+          fill="url(#grad-organ)" stroke="#4E342E" stroke-width="2" filter="url(#shadow)" opacity="0.9"/>
+    <!-- Right lobes -->
+    <path d="M570,130 Q600,120 650,115 Q710,112 760,120 Q800,130 820,155
+             Q835,180 830,210 Q820,240 790,260 Q750,275 700,270
+             Q660,265 630,250 Q600,230 585,205 Q575,175 570,150 Z"
+          fill="url(#grad-organ)" stroke="#4E342E" stroke-width="2" filter="url(#shadow)" opacity="0.88"/>
+    <!-- Central fissure -->
+    <path d="M520,200 Q540,180 560,160 Q570,145 570,130"
+          fill="none" stroke="#3E2723" stroke-width="1.5" opacity="0.4"/>
+    <text x="450" y="195" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" fill="#EFEBE9" font-weight="700">LIVER</text>
+    <text x="700" y="190" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#EFEBE9" font-weight="600">(R. Lobes)</text>
+  </g>
+
+  <!-- Gallbladder - small pear-shaped sac on liver -->
+  <g id="gallbladder"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-004"
+     cursor="pointer">
+    <path d="M580,215 Q575,230 570,248 Q568,260 572,268 Q578,275 585,270
+             Q590,260 590,245 Q588,230 585,218 Q582,212 580,215 Z"
+          fill="url(#grad-bile)" stroke="#33691E" stroke-width="1.5" opacity="0.9"/>
+    <!-- Bile duct -->
+    <path d="M578,270 Q575,285 572,300"
+          fill="none" stroke="#558B2F" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <text x="598" y="255" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#33691E" font-weight="600">Gallbladder</text>
+  </g>
+
+  <!-- Pancreas - elongated gland in duodenal curve -->
+  <g id="pancreas"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-005"
+     cursor="pointer">
+    <path d="M560,340 Q590,345 620,360 Q650,375 670,395 Q680,410 675,420
+             Q665,425 650,415 Q630,400 600,385 Q570,370 545,355 Q535,345 545,338 Q552,335 560,340 Z"
+          fill="url(#grad-pancreas)" stroke="#E65100" stroke-width="1.5" opacity="0.85"/>
+    <text x="620" y="375" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#BF360C" font-weight="600">Pancreas</text>
+  </g>
+
+  <!-- ===============================================================
+       LAYER 6 - SPLEEN
+       =============================================================== -->
+
+  <!-- Spleen - elongated organ on left side -->
+  <g id="spleen"
+     data-system="digestive"
+     data-structure-id="struct-cat-dig-006"
+     cursor="pointer">
+    <path d="M340,300 Q325,320 320,360 Q318,400 325,430 Q335,450 355,455
+             Q375,450 385,430 Q390,400 388,360 Q385,320 370,300 Q355,290 340,300 Z"
+          fill="url(#grad-spleen)" stroke="#880E4F" stroke-width="2" filter="url(#shadow)" opacity="0.9"/>
+    <text x="350" y="385" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#FFCDD2" font-weight="700" transform="rotate(-80 350 385)">SPLEEN</text>
+  </g>
+
+  <!-- ===============================================================
+       ANNOTATIONS - Flow arrows and labels
+       =============================================================== -->
+
+  <defs>
+    <marker id="arrow-flow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#795548"/>
+    </marker>
+  </defs>
+
+  <!-- Food flow: Esophagus -> Stomach -->
+  <line x1="525" y1="200" x2="510" y2="230" stroke="#795548" stroke-width="1.5" marker-end="url(#arrow-flow)" opacity="0.4"/>
+  <!-- Flow: Stomach -> Duodenum -->
+  <line x1="560" y1="320" x2="570" y2="340" stroke="#795548" stroke-width="1.5" marker-end="url(#arrow-flow)" opacity="0.4"/>
+  <!-- Flow: Duodenum -> Jejunum -->
+  <line x1="535" y1="450" x2="530" y2="460" stroke="#795548" stroke-width="1.5" marker-end="url(#arrow-flow)" opacity="0.4"/>
+  <!-- Flow: Ileum -> Cecum -->
+  <line x1="770" y1="640" x2="785" y2="655" stroke="#795548" stroke-width="1.5" marker-end="url(#arrow-flow)" opacity="0.4"/>
+  <!-- Flow: Colon -> Rectum -->
+  <line x1="600" y1="725" x2="600" y2="740" stroke="#795548" stroke-width="1.5" marker-end="url(#arrow-flow)" opacity="0.4"/>
+
+  <!-- Orientation compass -->
+  <g transform="translate(80, 840)" opacity="0.6">
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6D4C41" font-weight="600">ORIENTATION</text>
+    <text x="0" y="14" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">Cranial (head) = top</text>
+    <text x="0" y="26" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">R = Right (viewer left) | L = Left (viewer right)</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(920, 740)" opacity="0.7">
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#4E342E" font-weight="700">LEGEND</text>
+    <rect x="0" y="8" width="14" height="10" rx="2" fill="url(#grad-mucosa)"/>
+    <text x="20" y="17" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Stomach / GI mucosa</text>
+    <rect x="0" y="24" width="14" height="10" rx="2" fill="url(#grad-small-int)"/>
+    <text x="20" y="33" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Small intestine</text>
+    <rect x="0" y="40" width="14" height="10" rx="2" fill="url(#grad-large-int)"/>
+    <text x="20" y="49" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Large intestine</text>
+    <rect x="0" y="56" width="14" height="10" rx="2" fill="url(#grad-organ)"/>
+    <text x="20" y="65" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Parenchymal organs</text>
+    <rect x="0" y="72" width="14" height="10" rx="2" fill="url(#grad-bile)"/>
+    <text x="20" y="81" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Biliary system</text>
+    <rect x="0" y="88" width="14" height="10" rx="2" fill="url(#grad-serosa)"/>
+    <text x="20" y="97" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Peritoneum</text>
+  </g>
+
+  <!-- Copyright / model info -->
+  <text x="600" y="892" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BCAAA4">
+    AnatoView v1.0.0 - Cat Digestive Model - 15 labeled structures
+  </text>
+
+</svg>

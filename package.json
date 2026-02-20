@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "docker compose up",
+    "dev:build": "docker compose up --build",
+    "stop": "docker compose down",
+    "logs": "docker compose logs -f",
+    "db:migrate": "docker compose exec api npx prisma migrate dev",
+    "db:seed": "docker compose exec api npm run db:seed",
+    "db:reset": "docker compose exec api npx prisma migrate reset",
+    "db:studio": "docker compose exec api npx prisma studio",
+    "test": "docker compose -f docker-compose.yml -f docker-compose.test.yml run --rm api npm test",
+    "test:e2e": "npx playwright test --config=tests/e2e/playwright.config.ts",
+    "test:e2e:ui": "npx playwright test --config=tests/e2e/playwright.config.ts --ui",
+    "test:e2e:headed": "npx playwright test --config=tests/e2e/playwright.config.ts --headed",
+    "shell:api": "docker compose exec api bash",
+    "shell:db": "docker compose exec postgres psql -U anatoview"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/jsonwebtoken": "^9.0.10",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

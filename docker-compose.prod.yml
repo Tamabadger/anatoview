@@ -1,0 +1,57 @@
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  nginx:
+    volumes:
+      - ./infrastructure/nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    ports:
+      - "80:80"
+      - "443:443"
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.prod
+    volumes: []
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=/api
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.prod
+    volumes: []
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - LTI_KEY_ID=${LTI_KEY_ID}
+      - LTI_CLIENT_ID=${LTI_CLIENT_ID}
+      - CANVAS_BASE_URL=${CANVAS_BASE_URL}
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_BUCKET=${S3_BUCKET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.prod
+    command: node dist/worker/index.js
+    volumes: []
+
+  localstack:
+    profiles:
+      - dev-only
+
+  adminer:
+    profiles:
+      - dev-only

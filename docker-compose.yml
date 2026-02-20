@@ -1,0 +1,189 @@
+name: anatoview
+
+networks:
+  anatoview_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  localstack_data:
+  node_modules_api:
+  node_modules_web:
+
+services:
+  # ─── REVERSE PROXY ───────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: anatoview_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - web
+      - api
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+
+  # ─── FRONTEND ────────────────────────────────────────────────
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.dev
+    container_name: anatoview_web
+    volumes:
+      - ./apps/web:/app
+      - node_modules_web:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost/api
+      - VITE_WS_URL=ws://localhost/api
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── BACKEND API ─────────────────────────────────────────────
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+    container_name: anatoview_api
+    volumes:
+      - ./apps/api:/app
+      - node_modules_api:/app/node_modules
+      - ./packages:/packages
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - DATABASE_URL=postgresql://anatoview:secret@postgres:5432/anatoview
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=dev_jwt_secret_change_in_production
+      - LTI_KEY_ID=anatoview-dev-key
+      - LTI_CLIENT_ID=${LTI_CLIENT_ID:-your_canvas_client_id}
+      - CANVAS_BASE_URL=${CANVAS_BASE_URL:-https://canvas.instructure.com}
+      - S3_ENDPOINT=http://localstack:4566
+      - S3_BUCKET=anatoview-assets
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=us-east-1
+      - FRONTEND_URL=http://localhost
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+        required: false
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── BACKGROUND WORKER ───────────────────────────────────────
+  worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.dev
+    container_name: anatoview_worker
+    command: npx ts-node-dev --respawn src/worker/index.ts
+    volumes:
+      - ./apps/api:/app
+      - node_modules_api:/app/node_modules
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://anatoview:secret@postgres:5432/anatoview
+      - REDIS_URL=redis://redis:6379
+      - CANVAS_BASE_URL=${CANVAS_BASE_URL:-https://canvas.instructure.com}
+    depends_on:
+      - api
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+
+  # ─── DATABASE ────────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: anatoview_postgres
+    environment:
+      POSTGRES_DB: anatoview
+      POSTGRES_USER: anatoview
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anatoview -d anatoview"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─── CACHE / SESSIONS ────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: anatoview_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─── LOCAL S3 (replaces AWS in dev) ──────────────────────────
+  localstack:
+    image: localstack/localstack:latest
+    container_name: anatoview_localstack
+    environment:
+      - SERVICES=s3
+      - DEFAULT_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - ./infrastructure/localstack/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh:ro
+    ports:
+      - "4566:4566"
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ─── DATABASE GUI (dev only) ─────────────────────────────────
+  adminer:
+    image: adminer
+    container_name: anatoview_adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - anatoview_network
+    restart: unless-stopped
+    profiles:
+      - tools

@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/tamwilliams/local/sidehustle/anatoview/scripts/dev-restart.sh:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx tsc:*)",
+      "Bash(docker compose exec:*)",
+      "Bash(docker compose restart:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(docker compose port:*)",
+      "Bash(bash scripts/upload-models.sh:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLWRldi1pbnN0cnVjdG9yIiwicm9sZSI6Imluc3RydWN0b3IiLCJpbnN0aXR1dGlvbklkIjoiaW5zdC1kZXYtMDAxIiwiaWF0IjoxNzcxNTgxMzg1LCJleHAiOjE3NzE1ODQ5ODV9.-pLtk-2ZIqsQNepRIEoQRQ3Vmv0If5C7E1c_r7icI6s\")",
+      "Bash(wc:*)",
+      "Bash(npm install:*)",
+      "Bash(DATABASE_URL=\"postgresql://anatoview:secret@localhost:5432/anatoview\" npx jest:*)",
+      "Bash(DATABASE_URL=\"postgresql://anatoview:secret@localhost:5432/anatoview_test\" npx jest:*)",
+      "Bash(docker exec:*)",
+      "Bash(DATABASE_URL=\"postgresql://anatoview:secret@localhost:5432/anatoview\" npx ts-node:*)",
+      "Bash(npm ls:*)",
+      "Bash(DATABASE_URL=\"postgresql://anatoview:secret@localhost:5432/anatoview\" npx prisma db push:*)",
+      "Bash(PGPASSWORD=secret psql:*)",
+      "Bash(brew services:*)",
+      "Bash(pg_isready:*)",
+      "Bash(lsof:*)",
+      "Bash(npm test:*)",
+      "Bash(ls:*)",
+      "Bash(npx jest:*)",
+      "Bash(npx md-to-pdf:*)",
+      "Bash(npx --yes md-to-pdf:*)",
+      "Bash(chmod:*)",
+      "Bash(bash -n /Users/tamwilliams/local/sidehustle/anatoview/scripts/dev-up.sh)",
+      "Bash(/Users/tamwilliams/local/sidehustle/anatoview/scripts/dev-up.sh:*)"
+    ]
+  }
+}

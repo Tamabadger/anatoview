@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AnatoView — Fetal Pig Cardiovascular System (Anterior Cross-Section)
+  Anatomical model SVG for interactive dissection lab.
+
+  Orientation: Anterior view of open thorax with heart cross-section.
+  Anatomical left = viewer's right (standard anatomical position).
+
+  Each interactive structure has:
+    id          = slug matching svgElementId in the database
+    data-system = "cardiovascular"
+    data-structure-id = UUID from prisma/seed.ts
+
+  18 structures total, organized in rendering order (back-to-front):
+    Great vessels → Fetal shunts → Heart chambers → Valves → Septum →
+    Coronary → Umbilical vessels
+
+  Structures:
+    1.  Left Ventricle            struct-pig-cv-001
+    2.  Right Ventricle           struct-pig-cv-002
+    3.  Left Atrium               struct-pig-cv-003
+    4.  Right Atrium              struct-pig-cv-004
+    5.  Aorta                     struct-pig-cv-005
+    6.  Pulmonary Trunk           struct-pig-cv-006
+    7.  Superior Vena Cava        struct-pig-cv-007
+    8.  Inferior Vena Cava        struct-pig-cv-008
+    9.  Pulmonary Veins           struct-pig-cv-009
+    10. Mitral Valve              struct-pig-cv-010
+    11. Tricuspid Valve           struct-pig-cv-011
+    12. Interventricular Septum   struct-pig-cv-012
+    13. Coronary Arteries         struct-pig-cv-013
+    14. Descending Aorta          struct-pig-cv-014
+    15. Ductus Arteriosus         struct-pig-cv-015
+    16. Foramen Ovale             struct-pig-cv-016
+    17. Umbilical Arteries        struct-pig-cv-017
+    18. Umbilical Vein            struct-pig-cv-018
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 900"
+     width="1200"
+     height="900"
+     role="img"
+     aria-label="Fetal pig cardiovascular system cross-section">
+
+  <title>Fetal Pig Cardiovascular System — Anterior Cross-Section</title>
+  <desc>Interactive SVG of a fetal pig heart showing all four chambers, great vessels, valves, fetal shunts (ductus arteriosus, foramen ovale), and umbilical vasculature for pre-veterinary anatomy study.</desc>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DEFINITIONS — gradients, filters, markers
+       ═══════════════════════════════════════════════════════════════ -->
+  <defs>
+    <!-- Oxygenated blood gradient (bright red) -->
+    <linearGradient id="grad-oxy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E53935"/>
+      <stop offset="100%" stop-color="#B71C1C"/>
+    </linearGradient>
+
+    <!-- Deoxygenated blood gradient (dark blue-red) -->
+    <linearGradient id="grad-deoxy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5C6BC0"/>
+      <stop offset="100%" stop-color="#283593"/>
+    </linearGradient>
+
+    <!-- Myocardium wall gradient -->
+    <linearGradient id="grad-wall" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C8A88A"/>
+      <stop offset="100%" stop-color="#A1887F"/>
+    </linearGradient>
+
+    <!-- Valve tissue -->
+    <linearGradient id="grad-valve" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFECB3"/>
+      <stop offset="100%" stop-color="#FFD54F"/>
+    </linearGradient>
+
+    <!-- Artery wall gradient -->
+    <linearGradient id="grad-artery" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EF5350"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </linearGradient>
+
+    <!-- Vein wall gradient -->
+    <linearGradient id="grad-vein" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7986CB"/>
+      <stop offset="100%" stop-color="#3949AB"/>
+    </linearGradient>
+
+    <!-- Septum gradient -->
+    <linearGradient id="grad-septum" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#BCAAA4"/>
+      <stop offset="100%" stop-color="#8D6E63"/>
+    </linearGradient>
+
+    <!-- Coronary artery gradient -->
+    <linearGradient id="grad-coronary" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF7043"/>
+      <stop offset="100%" stop-color="#E64A19"/>
+    </linearGradient>
+
+    <!-- Fetal shunt gradient (teal) -->
+    <linearGradient id="grad-fetal-shunt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4DB6AC"/>
+      <stop offset="100%" stop-color="#00897B"/>
+    </linearGradient>
+
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+
+    <!-- Hover glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Blood flow arrow markers -->
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#E53935"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#5C6BC0"/>
+    </marker>
+    <marker id="arrow-teal" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#00897B"/>
+    </marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BACKGROUND — Thoracic cavity outline
+       ═══════════════════════════════════════════════════════════════ -->
+  <rect width="1200" height="900" fill="#FFF8F0" rx="8"/>
+
+  <!-- Thorax outline (rib cage silhouette) -->
+  <ellipse cx="600" cy="440" rx="410" ry="340" fill="none" stroke="#D7CCC8" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.5"/>
+
+  <!-- Lungs (background context — fetal lungs, collapsed / non-functional) -->
+  <path d="M210,240 Q190,430 225,630 Q320,680 375,570 Q395,470 375,345 Q345,215 210,240 Z"
+        fill="#FFCDD2" opacity="0.18" stroke="#EF9A9A" stroke-width="1"/>
+  <text x="290" y="440" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#EF9A9A" opacity="0.5" font-style="italic">Lung (collapsed)</text>
+  <path d="M990,240 Q1010,430 975,630 Q880,680 825,570 Q805,470 825,345 Q855,215 990,240 Z"
+        fill="#FFCDD2" opacity="0.18" stroke="#EF9A9A" stroke-width="1"/>
+  <text x="910" y="440" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#EF9A9A" opacity="0.5" font-style="italic">Lung (collapsed)</text>
+
+  <!-- Title label -->
+  <text x="600" y="42" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" fill="#4E342E" letter-spacing="0.5">
+    FETAL PIG CARDIOVASCULAR SYSTEM — ANTERIOR CROSS-SECTION
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 1 — GREAT VESSELS (deepest / behind the heart)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 14. Descending Aorta — runs behind heart, down the spine -->
+  <g id="descending-aorta"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-014"
+     cursor="pointer">
+    <path d="M625,150 Q625,210 620,310 L620,800"
+          fill="none" stroke="url(#grad-artery)" stroke-width="18" stroke-linecap="round" opacity="0.85"/>
+    <!-- Invisible wider hit-target -->
+    <path d="M625,150 Q625,210 620,310 L620,800"
+          fill="none" stroke="none" stroke-width="28" opacity="0" pointer-events="stroke"/>
+    <text x="642" y="780" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-style="italic">Desc. Aorta</text>
+  </g>
+
+  <!-- 7. Superior Vena Cava — enters RA from above -->
+  <g id="superior-vena-cava"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-007"
+     cursor="pointer">
+    <path d="M520,70 L520,165 Q520,205 515,250"
+          fill="none" stroke="url(#grad-vein)" stroke-width="22" stroke-linecap="round"/>
+    <text x="540" y="100" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#3949AB" font-weight="600">Superior Vena Cava</text>
+  </g>
+
+  <!-- 8. Inferior Vena Cava — enters RA from below -->
+  <g id="inferior-vena-cava"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-008"
+     cursor="pointer">
+    <path d="M530,830 L530,720 Q528,680 525,640"
+          fill="none" stroke="url(#grad-vein)" stroke-width="24" stroke-linecap="round"/>
+    <text x="552" y="775" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#3949AB" font-weight="600">Inferior Vena Cava</text>
+  </g>
+
+  <!-- 9. Pulmonary Veins — enter LA from lungs (minimal flow in fetus) -->
+  <g id="pulmonary-veins"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-009"
+     cursor="pointer">
+    <path d="M815,310 Q775,300 740,290 Q720,285 700,280"
+          fill="none" stroke="#EF5350" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+    <path d="M825,360 Q785,345 750,330 Q720,320 700,310"
+          fill="none" stroke="#EF5350" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+    <text x="828" y="305" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#C62828" font-style="italic">Pulm. Veins</text>
+    <text x="828" y="317" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#C62828" opacity="0.6">(minimal flow)</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 2 — AORTA (arch + ascending) & PULMONARY TRUNK
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 5. Aorta — ascending, arch, and junction to descending -->
+  <g id="aorta"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-005"
+     cursor="pointer">
+    <!-- Ascending aorta from LV outflow -->
+    <path d="M600,390 L600,215 Q600,145 645,122 Q685,108 720,122 Q748,140 748,185"
+          fill="none" stroke="url(#grad-artery)" stroke-width="24" stroke-linecap="round"/>
+    <!-- Aortic arch curvature connecting to descending aorta -->
+    <path d="M748,185 Q748,160 725,148 Q690,132 650,148"
+          fill="none" stroke="url(#grad-artery)" stroke-width="22" stroke-linecap="round" opacity="0.9"/>
+    <text x="758" y="168" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#C62828" font-weight="700">AORTA</text>
+  </g>
+
+  <!-- 6. Pulmonary Trunk — exits RV, bifurcates to L/R pulmonary arteries -->
+  <g id="pulmonary-trunk"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-006"
+     cursor="pointer">
+    <path d="M510,380 L505,260 Q505,212 470,188 Q440,172 412,188"
+          fill="none" stroke="url(#grad-vein)" stroke-width="20" stroke-linecap="round"/>
+    <!-- Right pulmonary artery branch -->
+    <path d="M412,188 Q375,198 335,232 Q305,262 285,300"
+          fill="none" stroke="url(#grad-vein)" stroke-width="12" stroke-linecap="round"/>
+    <!-- Left pulmonary artery branch (short, less flow in fetus) -->
+    <path d="M412,188 Q425,162 462,148 Q500,138 538,162"
+          fill="none" stroke="url(#grad-vein)" stroke-width="10" stroke-linecap="round" opacity="0.5"/>
+    <text x="340" y="182" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#283593" font-weight="600">Pulm. Trunk</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 2b — FETAL SHUNTS (unique to fetal circulation)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 15. Ductus Arteriosus — shunt connecting pulmonary trunk to aorta -->
+  <g id="ductus-arteriosus"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-015"
+     cursor="pointer">
+    <!-- The ductus: short, wide vessel from pulmonary trunk to aortic arch -->
+    <path d="M470,192 Q510,155 560,148 Q610,142 650,150"
+          fill="none" stroke="url(#grad-fetal-shunt)" stroke-width="14" stroke-linecap="round"
+          stroke-dasharray="10 4" opacity="0.9"/>
+    <!-- Glow ring to highlight fetal shunt -->
+    <path d="M470,192 Q510,155 560,148 Q610,142 650,150"
+          fill="none" stroke="#4DB6AC" stroke-width="20" stroke-linecap="round" opacity="0.15"/>
+    <!-- Flow arrow along ductus -->
+    <line x1="510" y1="160" x2="600" y2="150" stroke="#00897B" stroke-width="1.5" marker-end="url(#arrow-teal)" opacity="0.7"/>
+    <text x="520" y="130" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#00695C" font-weight="700">DUCTUS ARTERIOSUS</text>
+    <text x="520" y="142" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#00897B" font-style="italic">(bypasses lungs)</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 3 — HEART WALL (pericardium / myocardium outline)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Outer heart wall — pericardium silhouette -->
+  <path d="M430,235 Q382,282 370,372 Q360,458 378,538 Q398,608 468,658
+           Q530,695 600,688 Q668,678 718,638 Q768,588 778,508
+           Q788,428 768,352 Q748,282 700,244 Q650,215 600,220 Q530,215 430,235 Z"
+        fill="url(#grad-wall)" stroke="#8D6E63" stroke-width="3" filter="url(#shadow)" opacity="0.95"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 4 — HEART CHAMBERS (inside the wall)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 4. Right Atrium (viewer's left, anatomical right) — receives deoxygenated + mixed -->
+  <g id="right-atrium"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-004"
+     cursor="pointer">
+    <path d="M450,252 Q422,290 416,338 Q412,378 430,400 Q458,420 508,412
+             Q538,406 550,382 Q556,342 540,292 Q526,258 502,248 Q476,238 450,252 Z"
+          fill="url(#grad-deoxy)" stroke="#3949AB" stroke-width="2" opacity="0.9"/>
+    <text x="475" y="342" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#fff" font-weight="700">RA</text>
+  </g>
+
+  <!-- 3. Left Atrium (viewer's right, anatomical left) — receives oxygenated from pulm veins -->
+  <g id="left-atrium"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-003"
+     cursor="pointer">
+    <path d="M622,252 Q592,278 587,322 Q584,362 602,390 Q622,410 660,406
+             Q698,396 718,366 Q732,332 724,292 Q714,262 690,248 Q662,238 622,252 Z"
+          fill="url(#grad-oxy)" stroke="#C62828" stroke-width="2" opacity="0.9"/>
+    <text x="655" y="338" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#fff" font-weight="700">LA</text>
+  </g>
+
+  <!-- 2. Right Ventricle (viewer's left, anatomical right) — deoxygenated, thinner wall -->
+  <g id="right-ventricle"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-002"
+     cursor="pointer">
+    <path d="M420,420 Q396,468 392,528 Q390,578 410,618 Q438,658 488,668
+             Q530,672 555,650 Q570,630 574,590 Q578,540 570,480 Q562,442 545,422 Q520,408 420,420 Z"
+          fill="url(#grad-deoxy)" stroke="#3949AB" stroke-width="2" opacity="0.85"/>
+    <text x="482" y="548" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#fff" font-weight="700">RV</text>
+  </g>
+
+  <!-- 1. Left Ventricle (viewer's right, anatomical left) — oxygenated, thick wall -->
+  <g id="left-ventricle"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-001"
+     cursor="pointer">
+    <path d="M590,412 Q576,442 573,492 Q570,542 580,590 Q592,635 620,658
+             Q650,678 688,668 Q728,650 748,610 Q766,572 768,522 Q770,468 755,422
+             Q740,398 712,392 Q662,388 590,412 Z"
+          fill="url(#grad-oxy)" stroke="#C62828" stroke-width="2.5" opacity="0.9"/>
+    <text x="665" y="540" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" fill="#fff" font-weight="700">LV</text>
+    <!-- Thick wall indicator -->
+    <path d="M748,422 Q768,462 773,522 Q770,582 755,618"
+          fill="none" stroke="#A1887F" stroke-width="14" opacity="0.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 5 — INTERVENTRICULAR SEPTUM
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 12. Interventricular Septum -->
+  <g id="interventricular-septum"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-012"
+     cursor="pointer">
+    <path d="M568,418 Q572,482 575,542 Q578,600 585,655"
+          fill="none" stroke="url(#grad-septum)" stroke-width="16" stroke-linecap="round" opacity="0.85"/>
+    <text x="545" y="632" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#5D4037" font-weight="600" transform="rotate(-85 545 632)">IV SEPTUM</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 5b — FORAMEN OVALE (interatrial shunt)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 16. Foramen Ovale — opening in the interatrial septum -->
+  <g id="foramen-ovale"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-016"
+     cursor="pointer">
+    <!-- Interatrial septum segment for context -->
+    <path d="M560,260 Q565,305 568,350 Q570,380 572,410"
+          fill="none" stroke="url(#grad-septum)" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
+    <!-- The foramen: an opening / hole in the atrial septum -->
+    <ellipse cx="565" cy="320" rx="18" ry="24" fill="url(#grad-fetal-shunt)" stroke="#00897B" stroke-width="2.5"
+             stroke-dasharray="6 3" opacity="0.85"/>
+    <!-- Inner opening (dark center to suggest hole) -->
+    <ellipse cx="565" cy="320" rx="10" ry="15" fill="#00695C" opacity="0.4"/>
+    <!-- Flow arrow RA to LA through foramen -->
+    <line x1="540" y1="320" x2="585" y2="320" stroke="#00897B" stroke-width="1.5" marker-end="url(#arrow-teal)" opacity="0.7"/>
+    <text x="530" y="362" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#00695C" font-weight="700">FORAMEN</text>
+    <text x="530" y="374" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#00695C" font-weight="700">OVALE</text>
+    <text x="530" y="385" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#00897B" font-style="italic">(RA to LA shunt)</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 6 — HEART VALVES
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 11. Tricuspid Valve — between RA and RV -->
+  <g id="tricuspid-valve"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-011"
+     cursor="pointer">
+    <ellipse cx="490" cy="416" rx="32" ry="10" fill="url(#grad-valve)" stroke="#F9A825" stroke-width="2" transform="rotate(-10 490 416)"/>
+    <!-- 3 cusps indicator -->
+    <line x1="472" y1="416" x2="472" y2="406" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <line x1="490" y1="414" x2="490" y2="404" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <line x1="508" y1="416" x2="508" y2="406" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <text x="440" y="434" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#F57F17" font-weight="600">TRICUSPID</text>
+  </g>
+
+  <!-- 10. Mitral (Bicuspid) Valve — between LA and LV -->
+  <g id="mitral-valve"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-010"
+     cursor="pointer">
+    <ellipse cx="650" cy="406" rx="30" ry="10" fill="url(#grad-valve)" stroke="#F9A825" stroke-width="2" transform="rotate(8 650 406)"/>
+    <!-- 2 cusps indicator -->
+    <line x1="638" y1="404" x2="638" y2="394" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <line x1="662" y1="404" x2="662" y2="394" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <text x="672" y="422" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#F57F17" font-weight="600">MITRAL</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 7 — CORONARY ARTERIES (surface of heart)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 13. Coronary Arteries -->
+  <g id="coronary-arteries"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-013"
+     cursor="pointer">
+    <!-- Left coronary artery — along left AV groove -->
+    <path d="M600,396 Q622,420 652,452 Q682,482 700,532 Q710,572 706,612"
+          fill="none" stroke="url(#grad-coronary)" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+    <!-- Left anterior descending branch -->
+    <path d="M652,452 Q632,492 618,542 Q608,582 602,632"
+          fill="none" stroke="url(#grad-coronary)" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+    <!-- Right coronary artery — along right AV groove -->
+    <path d="M596,396 Q572,420 542,452 Q512,482 492,532 Q482,572 486,612"
+          fill="none" stroke="url(#grad-coronary)" stroke-width="4.5" stroke-linecap="round" opacity="0.85"/>
+    <text x="718" y="558" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#E64A19" font-style="italic">Coronary AA.</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 8 — UMBILICAL VESSELS (unique to fetal circulation)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- 18. Umbilical Vein — single vein from umbilicus / placenta to liver / IVC
+       Carries OXYGENATED blood from placenta (red gradient) -->
+  <g id="umbilical-vein"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-018"
+     cursor="pointer">
+    <!-- Main trunk: from umbilicus (bottom center) up to IVC / liver area -->
+    <path d="M560,890 Q558,860 555,830 Q550,800 540,770 Q535,750 530,735"
+          fill="none" stroke="url(#grad-oxy)" stroke-width="14" stroke-linecap="round" opacity="0.85"/>
+    <!-- Continues upward merging toward IVC -->
+    <path d="M530,735 Q528,720 528,700 Q528,685 530,670"
+          fill="none" stroke="url(#grad-oxy)" stroke-width="12" stroke-linecap="round" opacity="0.75"/>
+    <!-- Invisible wider hit-target -->
+    <path d="M560,890 Q558,860 555,830 Q550,800 540,770 Q535,750 530,735 Q528,720 528,700 Q528,685 530,670"
+          fill="none" stroke="none" stroke-width="24" opacity="0" pointer-events="stroke"/>
+    <!-- Label -->
+    <text x="575" y="855" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-weight="600">Umbilical Vein</text>
+    <text x="575" y="868" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#C62828" opacity="0.7" font-style="italic">(oxygenated from placenta)</text>
+    <!-- Flow arrow up -->
+    <line x1="548" y1="810" x2="538" y2="755" stroke="#E53935" stroke-width="1.5" marker-end="url(#arrow-red)" opacity="0.5"/>
+  </g>
+
+  <!-- 17. Umbilical Arteries — paired, from internal iliac arteries to umbilicus
+       Carry DEOXYGENATED blood to placenta (blue gradient) -->
+  <g id="umbilical-arteries"
+     data-system="cardiovascular"
+     data-structure-id="struct-pig-cv-017"
+     cursor="pointer">
+    <!-- Right umbilical artery — branching from descending aorta / iliac region -->
+    <path d="M610,750 Q600,770 590,795 Q578,825 568,855 Q558,875 548,890"
+          fill="none" stroke="url(#grad-deoxy)" stroke-width="10" stroke-linecap="round" opacity="0.8"/>
+    <!-- Left umbilical artery -->
+    <path d="M635,750 Q640,770 642,795 Q643,825 638,855 Q632,875 622,890"
+          fill="none" stroke="url(#grad-deoxy)" stroke-width="10" stroke-linecap="round" opacity="0.8"/>
+    <!-- Invisible wider hit-targets -->
+    <path d="M610,750 Q600,770 590,795 Q578,825 568,855 Q558,875 548,890"
+          fill="none" stroke="none" stroke-width="20" opacity="0" pointer-events="stroke"/>
+    <path d="M635,750 Q640,770 642,795 Q643,825 638,855 Q632,875 622,890"
+          fill="none" stroke="none" stroke-width="20" opacity="0" pointer-events="stroke"/>
+    <!-- Label -->
+    <text x="648" y="830" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#283593" font-weight="600">Umbilical Arteries</text>
+    <text x="648" y="843" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#283593" opacity="0.7" font-style="italic">(deoxygenated to placenta)</text>
+    <!-- Flow arrows down -->
+    <line x1="600" y1="760" x2="575" y2="840" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+    <line x1="638" y1="760" x2="638" y2="845" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  </g>
+
+  <!-- Umbilicus indicator (bottom center) -->
+  <ellipse cx="585" cy="892" rx="45" ry="8" fill="none" stroke="#8D6E63" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.4"/>
+  <text x="585" y="900" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#8D6E63" opacity="0.5">UMBILICUS</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ANNOTATIONS — Directional labels, flow arrows, compass, legend
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Blood flow arrows (systemic + pulmonary) -->
+  <!-- Flow: SVC to RA -->
+  <line x1="520" y1="200" x2="500" y2="262" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  <!-- Flow: IVC to RA -->
+  <line x1="530" y1="680" x2="520" y2="635" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  <!-- Flow: RA to RV (through tricuspid) -->
+  <line x1="482" y1="402" x2="482" y2="462" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  <!-- Flow: RV to Pulmonary trunk -->
+  <line x1="508" y1="432" x2="508" y2="305" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  <!-- Flow: Pulmonary veins to LA (minimal in fetus) -->
+  <line x1="755" y1="310" x2="710" y2="310" stroke="#E53935" stroke-width="1" marker-end="url(#arrow-red)" opacity="0.3"/>
+  <!-- Flow: LA to LV (through mitral) -->
+  <line x1="660" y1="402" x2="660" y2="462" stroke="#E53935" stroke-width="1.5" marker-end="url(#arrow-red)" opacity="0.5"/>
+  <!-- Flow: LV to Aorta -->
+  <line x1="600" y1="420" x2="600" y2="305" stroke="#E53935" stroke-width="1.5" marker-end="url(#arrow-red)" opacity="0.5"/>
+
+  <!-- Fetal shunt flow annotation: DA = pulm trunk to aorta -->
+  <path d="M460,205 Q500,175 570,165 Q620,158 660,162"
+        fill="none" stroke="#00897B" stroke-width="1" marker-end="url(#arrow-teal)" opacity="0.4" stroke-dasharray="4 3"/>
+  <!-- Fetal shunt flow annotation: FO = RA to LA -->
+  <path d="M510,330 Q530,325 550,320"
+        fill="none" stroke="#00897B" stroke-width="1" marker-end="url(#arrow-teal)" opacity="0.4" stroke-dasharray="4 3"/>
+
+  <!-- Orientation compass -->
+  <g transform="translate(80, 838)" opacity="0.6">
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6D4C41" font-weight="600">ORIENTATION</text>
+    <text x="0" y="14" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">S = Superior (cranial) &#x2191;</text>
+    <text x="0" y="26" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">I = Inferior (caudal) &#x2193;</text>
+    <text x="0" y="38" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">R = Right (viewer left) &#x2190; &#x2192; L = Left (viewer right)</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(920, 700)" opacity="0.7">
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#4E342E" font-weight="700">LEGEND</text>
+
+    <rect x="0" y="10" width="14" height="10" rx="2" fill="url(#grad-oxy)"/>
+    <text x="20" y="19" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Oxygenated blood</text>
+
+    <rect x="0" y="26" width="14" height="10" rx="2" fill="url(#grad-deoxy)"/>
+    <text x="20" y="35" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Deoxygenated blood</text>
+
+    <rect x="0" y="42" width="14" height="10" rx="2" fill="url(#grad-valve)"/>
+    <text x="20" y="51" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Heart valves</text>
+
+    <rect x="0" y="58" width="14" height="10" rx="2" fill="url(#grad-coronary)"/>
+    <text x="20" y="67" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Coronary arteries</text>
+
+    <rect x="0" y="74" width="14" height="10" rx="2" fill="url(#grad-septum)"/>
+    <text x="20" y="83" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Septum / myocardium</text>
+
+    <rect x="0" y="90" width="14" height="10" rx="2" fill="url(#grad-fetal-shunt)" stroke="#00897B" stroke-width="1" stroke-dasharray="3 2"/>
+    <text x="20" y="99" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#00695C" font-weight="600">Fetal shunts</text>
+  </g>
+
+  <!-- Copyright / model info -->
+  <text x="600" y="892" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BCAAA4">
+    AnatoView v1.0.0 — Fetal Pig Cardiovascular Model — 18 labeled structures
+  </text>
+
+</svg>

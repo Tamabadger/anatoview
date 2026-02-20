@@ -1,0 +1,827 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AnatoView — Crayfish Open Circulatory System (Dorsal View)
+  Anatomical model SVG for interactive dissection lab.
+
+  Organism: Crayfish (Astacus / Procambarus) — Crustacean
+  Circulatory type: OPEN circulatory system
+  Oxygen carrier: Hemocyanin (copper-based, blue hemolymph)
+  Respiration: Gill-based
+
+  Orientation: Dorsal view, carapace partially removed.
+    Head + chelipeds (claws) = LEFT
+    Segmented abdomen + tail fan = RIGHT
+    Anatomical anterior = viewer's left
+
+  Each interactive structure has:
+    id                = slug matching svgElementId in the database
+    data-system       = "cardiovascular"
+    data-structure-id = UUID from prisma/seed.ts
+
+  11 structures total, organized in rendering order (back-to-front):
+    1.  Heart                 struct-crayfish-cv-001
+    2.  Pericardial Sinus     struct-crayfish-cv-002
+    3.  Ostia                 struct-crayfish-cv-003
+    4.  Anterior Aorta        struct-crayfish-cv-004
+    5.  Posterior Aorta       struct-crayfish-cv-005
+    6.  Sternal Artery        struct-crayfish-cv-006
+    7.  Hepatic Arteries      struct-crayfish-cv-007
+    8.  Gills                 struct-crayfish-cv-008
+    9.  Ventral Sinus         struct-crayfish-cv-009
+    10. Hepatopancreas        struct-crayfish-cv-010
+    11. Green Gland           struct-crayfish-cv-011
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1300 700"
+     width="1300"
+     height="700"
+     role="img"
+     aria-label="Crayfish open circulatory system dorsal view">
+
+  <title>Crayfish Open Circulatory System — Dorsal View</title>
+  <desc>Interactive SVG of a crayfish (crustacean) showing the open circulatory system with hemocyanin-based hemolymph, single-chambered heart, arterial system, gill respiration, and hemolymph sinuses for invertebrate zoology study.</desc>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DEFINITIONS — gradients, filters, patterns
+       ═══════════════════════════════════════════════════════════════ -->
+  <defs>
+    <!-- Hemocyanin-based hemolymph (blue — copper-based oxygen carrier) -->
+    <linearGradient id="grad-hemocyanin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#90CAF9"/>
+      <stop offset="100%" stop-color="#1565C0"/>
+    </linearGradient>
+
+    <!-- Heart muscle -->
+    <linearGradient id="grad-heart" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF5350"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </linearGradient>
+
+    <!-- Artery walls -->
+    <linearGradient id="grad-artery" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF7043"/>
+      <stop offset="100%" stop-color="#E64A19"/>
+    </linearGradient>
+
+    <!-- Exoskeleton / carapace (brown) -->
+    <linearGradient id="grad-exoskeleton" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#795548"/>
+      <stop offset="100%" stop-color="#4E342E"/>
+    </linearGradient>
+
+    <!-- Gill tissue (pink) -->
+    <linearGradient id="grad-gill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F8BBD0"/>
+      <stop offset="100%" stop-color="#EC407A"/>
+    </linearGradient>
+
+    <!-- Sinus spaces -->
+    <linearGradient id="grad-sinus" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B3E5FC"/>
+      <stop offset="100%" stop-color="#0288D1"/>
+    </linearGradient>
+
+    <!-- Hepatopancreas (digestive gland) -->
+    <linearGradient id="grad-digestive" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFCC80"/>
+      <stop offset="100%" stop-color="#EF6C00"/>
+    </linearGradient>
+
+    <!-- Green Gland (excretory / antennal gland) -->
+    <linearGradient id="grad-excretory" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C5E1A5"/>
+      <stop offset="100%" stop-color="#7CB342"/>
+    </linearGradient>
+
+    <!-- Pericardial sinus fill -->
+    <radialGradient id="grad-pericardial" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#B3E5FC" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#81D4FA" stop-opacity="0.25"/>
+    </radialGradient>
+
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+
+    <!-- Hover glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Arrow marker for hemolymph flow -->
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse"
+            fill="#1565C0">
+      <path d="M 0 0 L 10 5 L 0 10 Z"/>
+    </marker>
+
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto-start-reverse"
+            fill="#E64A19">
+      <path d="M 0 0 L 10 5 L 0 10 Z"/>
+    </marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BACKGROUND — Light blue-grey field
+       ═══════════════════════════════════════════════════════════════ -->
+  <rect width="1300" height="700" fill="#ECEFF1" rx="8"/>
+
+  <!-- Title -->
+  <text x="650" y="38" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="20"
+        font-weight="700" fill="#37474F" letter-spacing="0.5">
+    CRAYFISH OPEN CIRCULATORY SYSTEM — DORSAL VIEW
+  </text>
+  <text x="650" y="58" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="12"
+        fill="#607D8B" font-style="italic">
+    Carapace partially removed to reveal internal structures
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BODY OUTLINE — Dorsal view, head/claws LEFT, tail RIGHT
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Tail fan (telson + uropods) — rightmost -->
+  <g id="tail-fan" opacity="0.7">
+    <!-- Telson (central tail) -->
+    <path d="M1140,350 L1210,330 L1250,350 L1210,370 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1.5" opacity="0.8"/>
+    <!-- Left uropod -->
+    <path d="M1130,340 L1200,290 Q1230,280 1240,310 L1160,340 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.7"/>
+    <!-- Right uropod -->
+    <path d="M1130,360 L1200,410 Q1230,420 1240,390 L1160,360 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.7"/>
+  </g>
+
+  <!-- Segmented abdomen — 6 segments, RIGHT side -->
+  <g id="abdomen-segments" opacity="0.6">
+    <!-- Segment 6 (most posterior) -->
+    <rect x="1070" y="315" width="70" height="70" rx="8"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.7"/>
+    <!-- Segment 5 -->
+    <rect x="1000" y="310" width="75" height="80" rx="8"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.65"/>
+    <!-- Segment 4 -->
+    <rect x="930" y="305" width="75" height="90" rx="8"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.6"/>
+    <!-- Segment 3 -->
+    <rect x="860" y="300" width="75" height="100" rx="8"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.55"/>
+    <!-- Segment 2 -->
+    <rect x="790" y="295" width="75" height="110" rx="8"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.5"/>
+    <!-- Segment 1 (most anterior, connects to cephalothorax) -->
+    <rect x="720" y="290" width="75" height="120" rx="8"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1" opacity="0.45"/>
+    <!-- Segment lines / articulations -->
+    <line x1="790" y1="300" x2="790" y2="400" stroke="#3E2723" stroke-width="0.8" opacity="0.3"/>
+    <line x1="860" y1="305" x2="860" y2="395" stroke="#3E2723" stroke-width="0.8" opacity="0.3"/>
+    <line x1="930" y1="308" x2="930" y2="392" stroke="#3E2723" stroke-width="0.8" opacity="0.3"/>
+    <line x1="1000" y1="312" x2="1000" y2="388" stroke="#3E2723" stroke-width="0.8" opacity="0.3"/>
+    <line x1="1070" y1="318" x2="1070" y2="382" stroke="#3E2723" stroke-width="0.8" opacity="0.3"/>
+  </g>
+
+  <!-- Cephalothorax — large fused section, LEFT side -->
+  <!-- Partial carapace outline (dorsal shield, partially transparent to show organs) -->
+  <path d="M120,350
+           Q100,250 160,180
+           Q240,110 380,95
+           Q520,80 650,110
+           Q730,140 740,280
+           L740,420
+           Q730,560 650,590
+           Q520,620 380,605
+           Q240,590 160,520
+           Q100,450 120,350 Z"
+        fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2.5"
+        opacity="0.25" filter="url(#shadow)"/>
+
+  <!-- Carapace edge (intact portions, top and bottom arcs) -->
+  <path d="M160,180 Q240,110 380,95 Q520,80 650,110 Q730,140 740,280"
+        fill="none" stroke="#5D4037" stroke-width="2" opacity="0.6"/>
+  <path d="M160,520 Q240,590 380,605 Q520,620 650,590 Q730,560 740,420"
+        fill="none" stroke="#5D4037" stroke-width="2" opacity="0.6"/>
+
+  <!-- Rostrum (pointed projection at head) -->
+  <path d="M160,330 L80,340 L70,350 L80,360 L160,370"
+        fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Antennae (long, extending from head) -->
+  <line x1="130" y1="300" x2="30" y2="200" stroke="#8D6E63" stroke-width="1.5" opacity="0.5"/>
+  <line x1="130" y1="400" x2="30" y2="500" stroke="#8D6E63" stroke-width="1.5" opacity="0.5"/>
+  <!-- Antennules (shorter, inner pair) -->
+  <line x1="120" y1="320" x2="50" y2="270" stroke="#8D6E63" stroke-width="1" opacity="0.4"/>
+  <line x1="120" y1="380" x2="50" y2="430" stroke="#8D6E63" stroke-width="1" opacity="0.4"/>
+
+  <!-- Eyes (compound, on stalks) -->
+  <ellipse cx="115" cy="290" rx="12" ry="8" fill="#212121" stroke="#424242" stroke-width="1" opacity="0.7"/>
+  <ellipse cx="115" cy="410" rx="12" ry="8" fill="#212121" stroke="#424242" stroke-width="1" opacity="0.7"/>
+
+  <!-- Chelipeds (claws) — large, extending left from cephalothorax -->
+  <g id="left-cheliped" opacity="0.55">
+    <!-- Merus (upper arm) -->
+    <path d="M200,230 L160,170 Q150,155 130,150 L80,130"
+          fill="none" stroke="url(#grad-exoskeleton)" stroke-width="10" stroke-linecap="round"/>
+    <!-- Propodus + dactylus (claw) -->
+    <path d="M80,130 L40,115 L15,100 M40,115 L20,135"
+          fill="none" stroke="url(#grad-exoskeleton)" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  <g id="right-cheliped" opacity="0.55">
+    <path d="M200,470 L160,530 Q150,545 130,550 L80,570"
+          fill="none" stroke="url(#grad-exoskeleton)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M80,570 L40,585 L15,600 M40,585 L20,565"
+          fill="none" stroke="url(#grad-exoskeleton)" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- Walking legs (4 pairs, below cephalothorax) -->
+  <g id="walking-legs" opacity="0.4">
+    <!-- Left walking legs (dorsal view, extending downward = viewer's top) -->
+    <line x1="340" y1="180" x2="310" y2="100" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+    <line x1="420" y1="160" x2="400" y2="80" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+    <line x1="500" y1="150" x2="490" y2="70" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+    <line x1="580" y1="155" x2="580" y2="72" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+    <!-- Right walking legs (extending upward = viewer's bottom) -->
+    <line x1="340" y1="520" x2="310" y2="600" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+    <line x1="420" y1="540" x2="400" y2="620" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+    <line x1="500" y1="550" x2="490" y2="630" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+    <line x1="580" y1="545" x2="580" y2="628" stroke="#6D4C41" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 1 — VENTRAL SINUS (deepest layer, partially visible)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="ventral-sinus"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-009"
+     cursor="pointer">
+    <!-- The ventral sinus runs along the ventral midline; shown as
+         a semi-transparent band visible through the translucent body -->
+    <path d="M180,350
+             Q200,320 300,315
+             Q450,310 600,320
+             Q750,330 900,345
+             Q1000,350 1100,350
+             Q1000,355 900,360
+             Q750,370 600,380
+             Q450,390 300,385
+             Q200,380 180,350 Z"
+          fill="url(#grad-sinus)" opacity="0.2" stroke="#0288D1" stroke-width="1"
+          stroke-dasharray="6 3" stroke-opacity="0.4"/>
+    <!-- Label -->
+    <text x="600" y="400" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10"
+          fill="#0277BD" opacity="0.7" font-style="italic">
+      Ventral Sinus (hemolymph collecting space)
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 2 — GILLS (at base of walking legs, both sides)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="gills"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-008"
+     cursor="pointer">
+    <!-- Left gills (viewer's top side, 4 gill clusters) -->
+    <!-- Gill 1 -->
+    <g transform="translate(330,135) rotate(-15)">
+      <ellipse cx="0" cy="0" rx="22" ry="12" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-15" y1="-3" x2="15" y2="-3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-18" y1="0" x2="18" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-15" y1="3" x2="15" y2="3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-10" y1="6" x2="10" y2="6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-10" y1="-6" x2="10" y2="-6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+    <!-- Gill 2 -->
+    <g transform="translate(410,115) rotate(-10)">
+      <ellipse cx="0" cy="0" rx="24" ry="13" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-17" y1="-4" x2="17" y2="-4" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-20" y1="0" x2="20" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-17" y1="4" x2="17" y2="4" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-12" y1="7" x2="12" y2="7" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-12" y1="-7" x2="12" y2="-7" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+    <!-- Gill 3 -->
+    <g transform="translate(490,108) rotate(-5)">
+      <ellipse cx="0" cy="0" rx="23" ry="12" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-16" y1="-3" x2="16" y2="-3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-19" y1="0" x2="19" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-16" y1="3" x2="16" y2="3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-11" y1="6" x2="11" y2="6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-11" y1="-6" x2="11" y2="-6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+    <!-- Gill 4 -->
+    <g transform="translate(570,110) rotate(0)">
+      <ellipse cx="0" cy="0" rx="22" ry="11" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-15" y1="-3" x2="15" y2="-3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-18" y1="0" x2="18" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-15" y1="3" x2="15" y2="3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-10" y1="6" x2="10" y2="6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+
+    <!-- Right gills (viewer's bottom side, mirror) -->
+    <!-- Gill 1R -->
+    <g transform="translate(330,565) rotate(15)">
+      <ellipse cx="0" cy="0" rx="22" ry="12" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-15" y1="-3" x2="15" y2="-3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-18" y1="0" x2="18" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-15" y1="3" x2="15" y2="3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-10" y1="6" x2="10" y2="6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-10" y1="-6" x2="10" y2="-6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+    <!-- Gill 2R -->
+    <g transform="translate(410,585) rotate(10)">
+      <ellipse cx="0" cy="0" rx="24" ry="13" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-17" y1="-4" x2="17" y2="-4" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-20" y1="0" x2="20" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-17" y1="4" x2="17" y2="4" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-12" y1="7" x2="12" y2="7" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-12" y1="-7" x2="12" y2="-7" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+    <!-- Gill 3R -->
+    <g transform="translate(490,592) rotate(5)">
+      <ellipse cx="0" cy="0" rx="23" ry="12" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-16" y1="-3" x2="16" y2="-3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-19" y1="0" x2="19" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-16" y1="3" x2="16" y2="3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-11" y1="6" x2="11" y2="6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+    <!-- Gill 4R -->
+    <g transform="translate(570,590) rotate(0)">
+      <ellipse cx="0" cy="0" rx="22" ry="11" fill="url(#grad-gill)" opacity="0.7" stroke="#EC407A" stroke-width="0.8"/>
+      <line x1="-15" y1="-3" x2="15" y2="-3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-18" y1="0" x2="18" y2="0" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-15" y1="3" x2="15" y2="3" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+      <line x1="-10" y1="6" x2="10" y2="6" stroke="#F48FB1" stroke-width="0.5" opacity="0.6"/>
+    </g>
+
+    <!-- Gill label -->
+    <text x="450" y="80" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10"
+          fill="#C2185B" font-weight="600">
+      Gills
+    </text>
+    <line x1="450" y1="84" x2="450" y2="100" stroke="#C2185B" stroke-width="0.8" marker-end="url(#arrow-red)"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 3 — HEPATOPANCREAS (large bilobed digestive gland)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="hepatopancreas"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-010"
+     cursor="pointer">
+    <!-- Left lobe (viewer's upper half of cephalothorax) -->
+    <path d="M280,220
+             Q300,185 380,175
+             Q460,165 540,180
+             Q600,195 620,230
+             Q640,270 620,300
+             Q580,315 520,310
+             Q430,305 350,290
+             Q290,270 280,220 Z"
+          fill="url(#grad-digestive)" opacity="0.55" stroke="#E65100" stroke-width="1.2"
+          filter="url(#shadow)"/>
+    <!-- Right lobe (viewer's lower half) -->
+    <path d="M280,480
+             Q300,515 380,525
+             Q460,535 540,520
+             Q600,505 620,470
+             Q640,430 620,400
+             Q580,385 520,390
+             Q430,395 350,410
+             Q290,430 280,480 Z"
+          fill="url(#grad-digestive)" opacity="0.55" stroke="#E65100" stroke-width="1.2"
+          filter="url(#shadow)"/>
+    <!-- Tubular texture lines (left lobe) -->
+    <path d="M320,210 Q400,195 500,205" fill="none" stroke="#EF6C00" stroke-width="0.5" opacity="0.4"/>
+    <path d="M310,240 Q400,225 520,235" fill="none" stroke="#EF6C00" stroke-width="0.5" opacity="0.4"/>
+    <path d="M320,265 Q400,255 540,260" fill="none" stroke="#EF6C00" stroke-width="0.5" opacity="0.4"/>
+    <!-- Tubular texture lines (right lobe) -->
+    <path d="M320,490 Q400,505 500,495" fill="none" stroke="#EF6C00" stroke-width="0.5" opacity="0.4"/>
+    <path d="M310,460 Q400,475 520,465" fill="none" stroke="#EF6C00" stroke-width="0.5" opacity="0.4"/>
+    <path d="M320,435 Q400,445 540,440" fill="none" stroke="#EF6C00" stroke-width="0.5" opacity="0.4"/>
+    <!-- Label -->
+    <text x="440" y="252" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10"
+          fill="#BF360C" font-weight="600">
+      Hepatopancreas (L)
+    </text>
+    <text x="440" y="460" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10"
+          fill="#BF360C" font-weight="600">
+      Hepatopancreas (R)
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 4 — GREEN GLAND (antennal gland, excretory, anterior)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="green-gland"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-011"
+     cursor="pointer">
+    <!-- Left green gland (near base of left antenna) -->
+    <ellipse cx="160" cy="305" rx="18" ry="12"
+             fill="url(#grad-excretory)" opacity="0.8" stroke="#558B2F" stroke-width="1.2"/>
+    <!-- Right green gland -->
+    <ellipse cx="160" cy="395" rx="18" ry="12"
+             fill="url(#grad-excretory)" opacity="0.8" stroke="#558B2F" stroke-width="1.2"/>
+    <!-- Duct to antenna base -->
+    <path d="M145,305 Q132,298 128,302" fill="none" stroke="#689F38" stroke-width="1" opacity="0.6"/>
+    <path d="M145,395 Q132,402 128,398" fill="none" stroke="#689F38" stroke-width="1" opacity="0.6"/>
+    <!-- Label -->
+    <text x="160" y="345" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9"
+          fill="#33691E" font-weight="600">
+      Green
+    </text>
+    <text x="160" y="356" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9"
+          fill="#33691E" font-weight="600">
+      Glands
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 5 — PERICARDIAL SINUS (surrounds heart)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="pericardial-sinus"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-002"
+     cursor="pointer">
+    <ellipse cx="640" cy="350" rx="110" ry="80"
+             fill="url(#grad-pericardial)" stroke="#4FC3F7" stroke-width="1.5"
+             stroke-dasharray="5 3" opacity="0.6"/>
+    <!-- Label -->
+    <text x="640" y="280" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9"
+          fill="#0277BD" font-weight="500" opacity="0.8">
+      Pericardial Sinus
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 6 — HEPATIC ARTERIES (branch laterally from heart)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="hepatic-arteries"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-007"
+     cursor="pointer">
+    <!-- Left hepatic artery (toward upper hepatopancreas) -->
+    <path d="M610,325
+             Q580,300 540,280
+             Q500,265 460,258"
+          fill="none" stroke="url(#grad-artery)" stroke-width="4"
+          stroke-linecap="round" marker-end="url(#arrow-red)"/>
+    <!-- Right hepatic artery (toward lower hepatopancreas) -->
+    <path d="M610,375
+             Q580,400 540,420
+             Q500,435 460,442"
+          fill="none" stroke="url(#grad-artery)" stroke-width="4"
+          stroke-linecap="round" marker-end="url(#arrow-red)"/>
+    <!-- Labels -->
+    <text x="510" y="272" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9"
+          fill="#BF360C" font-weight="600">
+      Hepatic A. (L)
+    </text>
+    <text x="510" y="455" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="9"
+          fill="#BF360C" font-weight="600">
+      Hepatic A. (R)
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 7 — ANTERIOR AORTA (ophthalmic artery, forward to head)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="anterior-aorta"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-004"
+     cursor="pointer">
+    <path d="M600,340
+             Q540,335 470,338
+             Q390,342 320,345
+             Q260,348 210,350"
+          fill="none" stroke="url(#grad-artery)" stroke-width="5"
+          stroke-linecap="round" marker-end="url(#arrow-red)"/>
+    <!-- Branching near head -->
+    <path d="M240,348 Q220,330 200,310" fill="none" stroke="url(#grad-artery)"
+          stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-red)" opacity="0.7"/>
+    <path d="M240,352 Q220,370 200,390" fill="none" stroke="url(#grad-artery)"
+          stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-red)" opacity="0.7"/>
+    <!-- Label -->
+    <text x="400" y="330" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10"
+          fill="#BF360C" font-weight="700">
+      Anterior (Ophthalmic) Aorta
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 8 — POSTERIOR AORTA (dorsal, extends into abdomen)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="posterior-aorta"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-005"
+     cursor="pointer">
+    <path d="M680,350
+             Q740,348 800,347
+             Q880,346 960,348
+             Q1040,350 1100,350"
+          fill="none" stroke="url(#grad-artery)" stroke-width="4.5"
+          stroke-linecap="round" marker-end="url(#arrow-red)"/>
+    <!-- Label -->
+    <text x="900" y="338" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="10"
+          fill="#BF360C" font-weight="700">
+      Posterior Aorta
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 9 — STERNAL ARTERY (descends ventrally from heart)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="sternal-artery"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-006"
+     cursor="pointer">
+    <!-- In dorsal view, the sternal artery descends ventrally (into the page).
+         We represent this with a dashed line and depth indicator circle. -->
+    <line x1="640" y1="380" x2="640" y2="420"
+          stroke="url(#grad-artery)" stroke-width="4" stroke-linecap="round"/>
+    <!-- Depth indicator: concentric circles suggesting going "into the page" -->
+    <circle cx="640" cy="430" r="10" fill="none" stroke="#E64A19" stroke-width="2" opacity="0.8"/>
+    <circle cx="640" cy="430" r="6" fill="none" stroke="#E64A19" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="640" cy="430" r="2.5" fill="#E64A19" opacity="0.9"/>
+    <!-- Fork into sub-sternal + ventral thoracic artery -->
+    <path d="M640,440 Q620,460 595,470" fill="none" stroke="url(#grad-artery)"
+          stroke-width="2" stroke-linecap="round" stroke-dasharray="4 2" opacity="0.6"
+          marker-end="url(#arrow-red)"/>
+    <path d="M640,440 Q660,460 685,470" fill="none" stroke="url(#grad-artery)"
+          stroke-width="2" stroke-linecap="round" stroke-dasharray="4 2" opacity="0.6"
+          marker-end="url(#arrow-red)"/>
+    <!-- Label -->
+    <text x="700" y="432" text-anchor="start"
+          font-family="Inter, system-ui, sans-serif" font-size="10"
+          fill="#BF360C" font-weight="700">
+      Sternal Artery
+    </text>
+    <text x="700" y="444" text-anchor="start"
+          font-family="Inter, system-ui, sans-serif" font-size="8"
+          fill="#BF360C" font-style="italic" opacity="0.7">
+      (descends ventrally)
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 10 — HEART (single-chambered, diamond-shaped)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="heart"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-001"
+     cursor="pointer">
+    <!-- Heart body — roughly diamond / polygonal shape -->
+    <path d="M600,320
+             Q615,300 640,295
+             Q665,300 680,320
+             Q690,340 680,365
+             Q665,385 640,390
+             Q615,385 600,365
+             Q590,340 600,320 Z"
+          fill="url(#grad-heart)" stroke="#B71C1C" stroke-width="2"
+          filter="url(#shadow)" opacity="0.9"/>
+    <!-- Heart musculature texture -->
+    <path d="M615,310 Q640,305 665,310" fill="none" stroke="#FFCDD2" stroke-width="0.6" opacity="0.4"/>
+    <path d="M608,330 Q640,325 672,330" fill="none" stroke="#FFCDD2" stroke-width="0.6" opacity="0.4"/>
+    <path d="M610,350 Q640,345 670,350" fill="none" stroke="#FFCDD2" stroke-width="0.6" opacity="0.4"/>
+    <path d="M615,370 Q640,365 665,370" fill="none" stroke="#FFCDD2" stroke-width="0.6" opacity="0.4"/>
+    <!-- Label -->
+    <text x="640" y="352" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="11"
+          fill="#FFFFFF" font-weight="700">
+      Heart
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 11 — OSTIA (3 pairs of valve-like openings in heart wall)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="ostia"
+     data-system="cardiovascular"
+     data-structure-id="struct-crayfish-cv-003"
+     cursor="pointer">
+    <!-- Ostia are small slit-like openings in the heart wall.
+         3 pairs = 6 total (dorsal-lateral positions) -->
+    <!-- Pair 1 (anterior) -->
+    <line x1="608" y1="315" x2="616" y2="308" stroke="#FFCDD2" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="664" y1="308" x2="672" y2="315" stroke="#FFCDD2" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Pair 2 (middle-lateral) -->
+    <line x1="596" y1="340" x2="600" y2="330" stroke="#FFCDD2" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="680" y1="330" x2="684" y2="340" stroke="#FFCDD2" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Pair 3 (posterior) -->
+    <line x1="608" y1="377" x2="616" y2="384" stroke="#FFCDD2" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="664" y1="384" x2="672" y2="377" stroke="#FFCDD2" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- Small indicators showing inflow direction -->
+    <circle cx="604" cy="312" r="2" fill="#E3F2FD" stroke="#1565C0" stroke-width="0.8" opacity="0.8"/>
+    <circle cx="676" cy="312" r="2" fill="#E3F2FD" stroke="#1565C0" stroke-width="0.8" opacity="0.8"/>
+    <circle cx="592" cy="336" r="2" fill="#E3F2FD" stroke="#1565C0" stroke-width="0.8" opacity="0.8"/>
+    <circle cx="688" cy="336" r="2" fill="#E3F2FD" stroke="#1565C0" stroke-width="0.8" opacity="0.8"/>
+    <circle cx="604" cy="380" r="2" fill="#E3F2FD" stroke="#1565C0" stroke-width="0.8" opacity="0.8"/>
+    <circle cx="676" cy="380" r="2" fill="#E3F2FD" stroke="#1565C0" stroke-width="0.8" opacity="0.8"/>
+
+    <!-- Label with leader line -->
+    <line x1="690" y1="308" x2="720" y2="295" stroke="#B71C1C" stroke-width="0.8" opacity="0.6"/>
+    <text x="722" y="293" text-anchor="start"
+          font-family="Inter, system-ui, sans-serif" font-size="9"
+          fill="#B71C1C" font-weight="600">
+      Ostia (3 pairs)
+    </text>
+    <text x="722" y="304" text-anchor="start"
+          font-family="Inter, system-ui, sans-serif" font-size="8"
+          fill="#B71C1C" font-style="italic" opacity="0.7">
+      hemolymph inflow valves
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       HEMOLYMPH FLOW ARROWS — showing open circulation path
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="flow-arrows" opacity="0.5">
+    <!-- Flow: Heart pumps forward through anterior aorta -->
+    <path d="M595,342 Q520,340 440,342 Q360,345 280,350"
+          fill="none" stroke="#1565C0" stroke-width="1.5"
+          stroke-dasharray="6 4" marker-end="url(#arrow-blue)" opacity="0.5"/>
+
+    <!-- Flow: Heart pumps backward through posterior aorta -->
+    <path d="M685,350 Q760,349 840,348 Q920,350 1000,352"
+          fill="none" stroke="#1565C0" stroke-width="1.5"
+          stroke-dasharray="6 4" marker-end="url(#arrow-blue)" opacity="0.5"/>
+
+    <!-- Flow: Hemolymph bathes tissues, drains to ventral sinus -->
+    <path d="M280,360 Q280,400 300,430 Q350,470 450,480"
+          fill="none" stroke="#90CAF9" stroke-width="1.5"
+          stroke-dasharray="4 3" marker-end="url(#arrow-blue)" opacity="0.4"/>
+    <text x="310" y="450" font-family="Inter, system-ui, sans-serif" font-size="8"
+          fill="#1565C0" opacity="0.5" transform="rotate(30,310,450)">drains to sinus</text>
+
+    <!-- Flow: Ventral sinus to gills -->
+    <path d="M380,500 Q360,530 345,555"
+          fill="none" stroke="#90CAF9" stroke-width="1.5"
+          stroke-dasharray="4 3" marker-end="url(#arrow-blue)" opacity="0.5"/>
+    <path d="M380,200 Q360,170 345,145"
+          fill="none" stroke="#90CAF9" stroke-width="1.5"
+          stroke-dasharray="4 3" marker-end="url(#arrow-blue)" opacity="0.5"/>
+
+    <!-- Flow: Gills to pericardial sinus (oxygenated return) -->
+    <path d="M570,125 Q590,160 610,200 Q625,240 630,280"
+          fill="none" stroke="#1565C0" stroke-width="1.5"
+          stroke-dasharray="4 3" marker-end="url(#arrow-blue)" opacity="0.5"/>
+    <path d="M570,578 Q590,540 610,500 Q625,460 630,420"
+          fill="none" stroke="#1565C0" stroke-width="1.5"
+          stroke-dasharray="4 3" marker-end="url(#arrow-blue)" opacity="0.5"/>
+
+    <!-- Flow: Pericardial sinus back into heart via ostia -->
+    <path d="M580,300 Q590,305 600,315"
+          fill="none" stroke="#1565C0" stroke-width="1.5"
+          stroke-dasharray="3 2" marker-end="url(#arrow-blue)" opacity="0.6"/>
+    <path d="M580,400 Q590,395 600,385"
+          fill="none" stroke="#1565C0" stroke-width="1.5"
+          stroke-dasharray="3 2" marker-end="url(#arrow-blue)" opacity="0.6"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FLOW PATH ANNOTATION
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="flow-annotation" opacity="0.6">
+    <!-- Circular flow description along a curved path -->
+    <text x="850" y="440" font-family="Inter, system-ui, sans-serif" font-size="9"
+          fill="#0D47A1" font-style="italic" opacity="0.6">
+      Heart → Arteries → Tissue sinuses → Ventral sinus → Gills → Pericardial sinus → Ostia → Heart
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ORIENTATION LABELS
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="orientation-labels" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#78909C" font-weight="600">
+    <!-- Anterior (left) -->
+    <text x="30" y="355" text-anchor="start">
+      ANTERIOR
+    </text>
+    <path d="M90,356 L100,361 L90,366" fill="none" stroke="#78909C" stroke-width="1.2" transform="rotate(180,95,361)"/>
+
+    <!-- Posterior (right) -->
+    <text x="1205" y="355" text-anchor="start">
+      POSTERIOR
+    </text>
+    <path d="M1195,350 L1205,355 L1195,360" fill="none" stroke="#78909C" stroke-width="1.2"/>
+
+    <!-- Left (dorsal view: viewer's top = anatomical left) -->
+    <text x="650" y="82" text-anchor="middle" font-size="11">
+      LEFT
+    </text>
+
+    <!-- Right -->
+    <text x="650" y="660" text-anchor="middle" font-size="11">
+      RIGHT
+    </text>
+
+    <!-- Dorsal view indicator -->
+    <text x="1250" y="80" text-anchor="end" font-size="10" fill="#90A4AE">
+      DORSAL
+    </text>
+    <text x="1250" y="93" text-anchor="end" font-size="10" fill="#90A4AE">
+      VIEW
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LEGEND
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="legend" transform="translate(20, 480)">
+    <rect x="0" y="0" width="230" height="195" rx="6" fill="#FFFFFF" fill-opacity="0.85"
+          stroke="#B0BEC5" stroke-width="1"/>
+    <text x="115" y="20" text-anchor="middle"
+          font-family="Inter, system-ui, sans-serif" font-size="11"
+          font-weight="700" fill="#37474F">
+      LEGEND
+    </text>
+    <line x1="10" y1="28" x2="220" y2="28" stroke="#CFD8DC" stroke-width="0.8"/>
+
+    <!-- Hemocyanin hemolymph -->
+    <rect x="12" y="36" width="18" height="10" rx="2" fill="url(#grad-hemocyanin)"/>
+    <text x="36" y="45" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Hemocyanin-based hemolymph (blue)
+    </text>
+
+    <!-- Heart -->
+    <rect x="12" y="52" width="18" height="10" rx="2" fill="url(#grad-heart)"/>
+    <text x="36" y="61" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Heart (single-chambered)
+    </text>
+
+    <!-- Arteries -->
+    <rect x="12" y="68" width="18" height="10" rx="2" fill="url(#grad-artery)"/>
+    <text x="36" y="77" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Arteries (hemolymph distribution)
+    </text>
+
+    <!-- Exoskeleton -->
+    <rect x="12" y="84" width="18" height="10" rx="2" fill="url(#grad-exoskeleton)" opacity="0.6"/>
+    <text x="36" y="93" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Exoskeleton / carapace
+    </text>
+
+    <!-- Gills -->
+    <rect x="12" y="100" width="18" height="10" rx="2" fill="url(#grad-gill)"/>
+    <text x="36" y="109" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Gills (gas exchange)
+    </text>
+
+    <!-- Sinuses -->
+    <rect x="12" y="116" width="18" height="10" rx="2" fill="url(#grad-sinus)" opacity="0.5"/>
+    <text x="36" y="125" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Hemolymph sinuses
+    </text>
+
+    <!-- Hepatopancreas -->
+    <rect x="12" y="132" width="18" height="10" rx="2" fill="url(#grad-digestive)" opacity="0.7"/>
+    <text x="36" y="141" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Hepatopancreas (digestive gland)
+    </text>
+
+    <!-- Green Gland -->
+    <rect x="12" y="148" width="18" height="10" rx="2" fill="url(#grad-excretory)"/>
+    <text x="36" y="157" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Green gland (antennal / excretory)
+    </text>
+
+    <!-- Flow arrows -->
+    <line x1="12" y1="170" x2="30" y2="170" stroke="#1565C0" stroke-width="1.5"
+          stroke-dasharray="4 2" marker-end="url(#arrow-blue)"/>
+    <text x="36" y="173" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#37474F">
+      Hemolymph flow direction
+    </text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════════════════ -->
+  <text x="650" y="692" text-anchor="middle"
+        font-family="Inter, system-ui, sans-serif" font-size="9"
+        fill="#90A4AE">
+    AnatoView — Crayfish (Crustacea: Decapoda) Cardiovascular System | Open Circulation with Hemocyanin
+  </text>
+
+</svg>

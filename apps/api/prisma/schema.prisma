@@ -1,0 +1,274 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ──────────────────────────────────────────────────────
+
+enum UserRole {
+  instructor
+  student
+  ta
+  admin
+}
+
+enum ModelType {
+  svg
+  three_js
+  photographic
+}
+
+enum LabType {
+  identification
+  dissection
+  quiz
+  practical
+}
+
+enum AttemptStatus {
+  not_started
+  in_progress
+  submitted
+  graded
+}
+
+// ─── MODELS ─────────────────────────────────────────────────────
+
+model Institution {
+  id              String   @id @default(uuid())
+  name            String
+  canvasUrl       String   @unique @map("canvas_url")
+  ltiClientId     String   @map("lti_client_id")
+  ltiDeploymentId String?  @map("lti_deployment_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  users   User[]
+  courses Course[]
+
+  @@map("institutions")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  institutionId String   @map("institution_id")
+  canvasUserId  String   @map("canvas_user_id")
+  email         String?
+  name          String
+  role          UserRole
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  institution Institution  @relation(fields: [institutionId], references: [id])
+  courses     Course[]
+  attempts    LabAttempt[]
+
+  @@unique([institutionId, canvasUserId])
+  @@map("users")
+}
+
+model Course {
+  id             String   @id @default(uuid())
+  institutionId  String   @map("institution_id")
+  canvasCourseId String   @map("canvas_course_id")
+  name           String
+  term           String?
+  instructorId   String?  @map("instructor_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  institution Institution @relation(fields: [institutionId], references: [id])
+  instructor  User?       @relation(fields: [instructorId], references: [id])
+  labs        Lab[]
+
+  @@unique([institutionId, canvasCourseId])
+  @@map("courses")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  color     String
+  icon      String?
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  animals Animal[]
+
+  @@map("categories")
+}
+
+model Animal {
+  id             String    @id @default(uuid())
+  commonName     String    @map("common_name")
+  scientificName String?   @map("scientific_name")
+  categoryId     String    @map("category_id")
+  description    String?
+  thumbnailUrl   String?   @map("thumbnail_url")
+  modelType      ModelType @map("model_type")
+  isActive       Boolean   @default(true) @map("is_active")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  category Category          @relation(fields: [categoryId], references: [id])
+  models   DissectionModel[]
+  labs     Lab[]
+
+  @@map("animals")
+}
+
+model DissectionModel {
+  id           String   @id @default(uuid())
+  animalId     String   @map("animal_id")
+  version      String
+  organSystem  String   @map("organ_system")
+  modelFileUrl String   @map("model_file_url")
+  thumbnailUrl String?  @map("thumbnail_url")
+  layerOrder   Int      @default(0) @map("layer_order")
+  isPublished  Boolean  @default(false) @map("is_published")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  animal     Animal                @relation(fields: [animalId], references: [id])
+  structures AnatomicalStructure[]
+
+  @@map("dissection_models")
+}
+
+model AnatomicalStructure {
+  id                String   @id @default(uuid())
+  modelId           String   @map("model_id")
+  name              String
+  latinName         String?  @map("latin_name")
+  svgElementId      String?  @map("svg_element_id")
+  description       String?
+  funFact           String?  @map("fun_fact")
+  hint              String?
+  difficultyLevel   String   @default("medium") @map("difficulty_level")
+  coordinates       Json?
+  tags              String[]
+  // ─── Rich anatomy fields (Visible Body-style) ────────────
+  bloodSupply       String?  @map("blood_supply")
+  innervation       String?
+  muscleAttachments String?  @map("muscle_attachments")
+  clinicalNote      String?  @map("clinical_note")
+  pronunciationUrl  String?  @map("pronunciation_url")
+
+  model         DissectionModel    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  labStructures LabStructure[]
+  responses     StructureResponse[]
+  events        DissectionEvent[]
+
+  @@map("anatomical_structures")
+}
+
+model Lab {
+  id                 String    @id @default(uuid())
+  courseId           String    @map("course_id")
+  canvasAssignmentId String?   @map("canvas_assignment_id")
+  title              String
+  instructions       String?
+  animalId           String    @map("animal_id")
+  organSystems       String[]  @map("organ_systems")
+  labType            LabType   @map("lab_type")
+  settings           Json      @default("{}")
+  rubric             Json      @default("{}")
+  dueDate            DateTime? @map("due_date")
+  isPublished        Boolean   @default(false) @map("is_published")
+  maxPoints          Decimal   @default(100) @map("max_points")
+  createdBy          String    @map("created_by")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  course     Course         @relation(fields: [courseId], references: [id])
+  animal     Animal         @relation(fields: [animalId], references: [id])
+  structures LabStructure[]
+  attempts   LabAttempt[]
+
+  @@map("labs")
+}
+
+model LabStructure {
+  id             String  @id @default(uuid())
+  labId          String  @map("lab_id")
+  structureId    String  @map("structure_id")
+  pointsPossible Decimal @default(1) @map("points_possible")
+  isRequired     Boolean @default(true) @map("is_required")
+  orderIndex     Int?    @map("order_index")
+
+  lab       Lab                 @relation(fields: [labId], references: [id], onDelete: Cascade)
+  structure AnatomicalStructure @relation(fields: [structureId], references: [id])
+
+  @@map("lab_structures")
+}
+
+model LabAttempt {
+  id                 String        @id @default(uuid())
+  labId              String        @map("lab_id")
+  studentId          String        @map("student_id")
+  attemptNumber      Int           @default(1) @map("attempt_number")
+  status             AttemptStatus @default(not_started)
+  startedAt          DateTime?     @map("started_at")
+  submittedAt        DateTime?     @map("submitted_at")
+  gradedAt           DateTime?     @map("graded_at")
+  timeSpentSeconds   Int?          @map("time_spent_seconds")
+  score              Decimal?
+  percentage         Decimal?
+  instructorFeedback String?       @map("instructor_feedback")
+  canvasSubmissionId String?       @map("canvas_submission_id")
+  ltiOutcomeUrl      String?       @map("lti_outcome_url")
+  createdAt          DateTime      @default(now()) @map("created_at")
+
+  lab       Lab                 @relation(fields: [labId], references: [id])
+  student   User                @relation(fields: [studentId], references: [id])
+  responses StructureResponse[]
+  events    DissectionEvent[]
+  syncLogs  GradeSyncLog[]
+
+  @@map("lab_attempts")
+}
+
+model StructureResponse {
+  id                 String   @id @default(uuid())
+  attemptId          String   @map("attempt_id")
+  structureId        String   @map("structure_id")
+  studentAnswer      String?  @map("student_answer")
+  isCorrect          Boolean? @map("is_correct")
+  confidenceLevel    Int?     @map("confidence_level")
+  hintsUsed          Int      @default(0) @map("hints_used")
+  timeSpentSeconds   Int?     @map("time_spent_seconds")
+  pointsEarned       Decimal  @default(0) @map("points_earned")
+  autoGraded         Boolean  @default(true) @map("auto_graded")
+  instructorOverride Decimal? @map("instructor_override")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  attempt   LabAttempt          @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  structure AnatomicalStructure @relation(fields: [structureId], references: [id])
+
+  @@map("structure_responses")
+}
+
+model DissectionEvent {
+  id          String   @id @default(uuid())
+  attemptId   String   @map("attempt_id")
+  eventType   String   @map("event_type")
+  structureId String?  @map("structure_id")
+  payload     Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  attempt   LabAttempt           @relation(fields: [attemptId], references: [id])
+  structure AnatomicalStructure? @relation(fields: [structureId], references: [id])
+
+  @@map("dissection_events")
+}
+
+model GradeSyncLog {
+  id             String   @id @default(uuid())
+  attemptId      String   @map("attempt_id")
+  canvasStatus   String?  @map("canvas_status")
+  canvasResponse Json?    @map("canvas_response")
+  syncedAt       DateTime @default(now()) @map("synced_at")
+
+  attempt LabAttempt @relation(fields: [attemptId], references: [id])
+
+  @@map("grade_sync_log")
+}

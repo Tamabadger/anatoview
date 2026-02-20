@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AnatoView — Norway Rat Cardiovascular System (Anterior Cross-Section)
+  Anatomical model SVG for interactive dissection lab.
+
+  Orientation: Anterior view of open thorax with heart cross-section.
+  Anatomical left = viewer's right (standard anatomical position).
+
+  Each interactive structure has:
+    id          = slug matching svgElementId in the database
+    data-system = "cardiovascular"
+    data-structure-id = UUID from prisma/seed.ts
+
+  14 structures total, organized in rendering order (back-to-front):
+    1.  Left Ventricle             left-ventricle             struct-rat-cv-001
+    2.  Right Ventricle            right-ventricle            struct-rat-cv-002
+    3.  Left Atrium                left-atrium                struct-rat-cv-003
+    4.  Right Atrium               right-atrium               struct-rat-cv-004
+    5.  Aorta                      aorta                      struct-rat-cv-005
+    6.  Pulmonary Trunk            pulmonary-trunk            struct-rat-cv-006
+    7.  Superior Vena Cava         superior-vena-cava         struct-rat-cv-007
+    8.  Inferior Vena Cava         inferior-vena-cava         struct-rat-cv-008
+    9.  Pulmonary Veins            pulmonary-veins            struct-rat-cv-009
+    10. Mitral Valve               mitral-valve               struct-rat-cv-010
+    11. Tricuspid Valve            tricuspid-valve            struct-rat-cv-011
+    12. Interventricular Septum    interventricular-septum    struct-rat-cv-012
+    13. Coronary Arteries          coronary-arteries          struct-rat-cv-013
+    14. Descending Aorta           descending-aorta           struct-rat-cv-014
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 900"
+     width="1200"
+     height="900"
+     role="img"
+     aria-label="Norway rat cardiovascular system cross-section">
+
+  <title>Norway Rat Cardiovascular System — Anterior Cross-Section</title>
+  <desc>Interactive SVG of a Norway rat heart showing all four chambers, great vessels, valves, and major vasculature for pre-veterinary and biomedical anatomy study.</desc>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DEFINITIONS — gradients, filters, markers
+       ═══════════════════════════════════════════════════════════════ -->
+  <defs>
+    <!-- Oxygenated blood gradient (bright red) -->
+    <linearGradient id="grad-oxy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E53935"/>
+      <stop offset="100%" stop-color="#B71C1C"/>
+    </linearGradient>
+
+    <!-- Deoxygenated blood gradient (dark blue-red) -->
+    <linearGradient id="grad-deoxy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5C6BC0"/>
+      <stop offset="100%" stop-color="#283593"/>
+    </linearGradient>
+
+    <!-- Myocardium wall gradient -->
+    <linearGradient id="grad-wall" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C8A88A"/>
+      <stop offset="100%" stop-color="#A1887F"/>
+    </linearGradient>
+
+    <!-- Valve tissue -->
+    <linearGradient id="grad-valve" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFECB3"/>
+      <stop offset="100%" stop-color="#FFD54F"/>
+    </linearGradient>
+
+    <!-- Artery wall gradient -->
+    <linearGradient id="grad-artery" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EF5350"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </linearGradient>
+
+    <!-- Vein wall gradient -->
+    <linearGradient id="grad-vein" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7986CB"/>
+      <stop offset="100%" stop-color="#3949AB"/>
+    </linearGradient>
+
+    <!-- Septum gradient -->
+    <linearGradient id="grad-septum" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#BCAAA4"/>
+      <stop offset="100%" stop-color="#8D6E63"/>
+    </linearGradient>
+
+    <!-- Coronary artery gradient -->
+    <linearGradient id="grad-coronary" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF7043"/>
+      <stop offset="100%" stop-color="#E64A19"/>
+    </linearGradient>
+
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+
+    <!-- Hover glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Blood flow arrow markers -->
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#E53935"/>
+    </marker>
+    <marker id="arrow-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#5C6BC0"/>
+    </marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BACKGROUND — Thoracic cavity outline
+       ═══════════════════════════════════════════════════════════════ -->
+  <rect width="1200" height="900" fill="#FFF8F0" rx="8"/>
+
+  <!-- Thorax outline (rib cage silhouette — smaller than cat) -->
+  <ellipse cx="600" cy="460" rx="340" ry="300" fill="none" stroke="#D7CCC8" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.5"/>
+
+  <!-- Lungs (background context — compact rat thorax) -->
+  <path d="M280,280 Q265,430 290,590 Q370,635 420,540 Q438,460 420,360 Q395,265 280,280 Z"
+        fill="#FFCDD2" opacity="0.25" stroke="#EF9A9A" stroke-width="1"/>
+  <path d="M920,280 Q935,430 910,590 Q830,635 780,540 Q762,460 780,360 Q805,265 920,280 Z"
+        fill="#FFCDD2" opacity="0.25" stroke="#EF9A9A" stroke-width="1"/>
+
+  <!-- Title label -->
+  <text x="600" y="42" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="20" font-weight="700" fill="#4E342E" letter-spacing="0.5">
+    RAT CARDIOVASCULAR SYSTEM — ANTERIOR CROSS-SECTION
+  </text>
+
+  <!-- Species subtitle -->
+  <text x="600" y="62" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#8D6E63" font-style="italic">
+    Rattus norvegicus (Norway Rat)
+  </text>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 1 — GREAT VESSELS (deepest / behind the heart)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Descending Aorta — runs behind heart, along the spine -->
+  <g id="descending-aorta"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-014"
+     cursor="pointer">
+    <path d="M625,165 Q625,220 622,310 L622,800"
+          fill="none" stroke="url(#grad-artery)" stroke-width="15" stroke-linecap="round" opacity="0.85"/>
+    <!-- Invisible wider hit area for pointer events -->
+    <path d="M625,165 Q625,220 622,310 L622,800"
+          fill="none" stroke="none" stroke-width="26" opacity="0" pointer-events="stroke"/>
+    <text x="644" y="780" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-style="italic">Desc. Aorta</text>
+  </g>
+
+  <!-- Superior Vena Cava (Cranial Vena Cava) — enters RA from above -->
+  <g id="superior-vena-cava"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-007"
+     cursor="pointer">
+    <path d="M528,90 L528,180 Q528,215 524,260"
+          fill="none" stroke="url(#grad-vein)" stroke-width="18" stroke-linecap="round"/>
+    <text x="546" y="118" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#3949AB" font-weight="600">Superior Vena Cava</text>
+  </g>
+
+  <!-- Inferior Vena Cava (Caudal Vena Cava) — enters RA from below -->
+  <g id="inferior-vena-cava"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-008"
+     cursor="pointer">
+    <path d="M535,830 L535,710 Q533,670 530,630"
+          fill="none" stroke="url(#grad-vein)" stroke-width="20" stroke-linecap="round"/>
+    <text x="555" y="770" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#3949AB" font-weight="600">Inferior Vena Cava</text>
+  </g>
+
+  <!-- Pulmonary Veins — enter LA from lungs (rat typically has 2-3 pulmonary veins) -->
+  <g id="pulmonary-veins"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-009"
+     cursor="pointer">
+    <path d="M790,320 Q755,310 720,300 Q700,295 685,290"
+          fill="none" stroke="#EF5350" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+    <path d="M800,365 Q770,352 740,340 Q715,330 690,322"
+          fill="none" stroke="#EF5350" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+    <text x="800" y="314" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#C62828" font-style="italic">Pulmonary Veins</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 2 — AORTA (arch + ascending portion)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Aorta — ascending, arch, and junction with descending -->
+  <g id="aorta"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-005"
+     cursor="pointer">
+    <path d="M604,400 L604,230 Q604,165 642,142 Q675,125 705,140 Q732,158 732,195"
+          fill="none" stroke="url(#grad-artery)" stroke-width="20" stroke-linecap="round"/>
+    <!-- Aortic arch continuation to descending aorta junction -->
+    <path d="M732,195 Q732,175 714,162 Q678,148 645,165"
+          fill="none" stroke="url(#grad-artery)" stroke-width="18" stroke-linecap="round" opacity="0.9"/>
+    <text x="742" y="180" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#C62828" font-weight="700">AORTA</text>
+  </g>
+
+  <!-- Pulmonary Trunk — exits RV, splits into L/R pulmonary arteries -->
+  <g id="pulmonary-trunk"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-006"
+     cursor="pointer">
+    <path d="M518,390 L514,275 Q514,228 482,206 Q455,192 430,205"
+          fill="none" stroke="url(#grad-vein)" stroke-width="16" stroke-linecap="round"/>
+    <!-- Bifurcation into L and R pulmonary arteries -->
+    <path d="M430,205 Q395,215 360,248 Q335,275 315,310"
+          fill="none" stroke="url(#grad-vein)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M430,205 Q440,180 475,168 Q510,158 540,178"
+          fill="none" stroke="url(#grad-vein)" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
+    <text x="365" y="202" font-family="Inter, system-ui, sans-serif" font-size="12" fill="#283593" font-weight="600">Pulmonary Trunk</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 3 — HEART WALL (pericardium / myocardium outline)
+       The rat heart is more compact than the cat heart.
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Outer heart wall — pericardium silhouette (compact rat heart) -->
+  <path d="M455,255 Q410,300 400,378 Q392,450 408,525 Q425,590 485,635
+           Q535,668 600,660 Q660,652 705,615 Q748,572 758,498
+           Q768,425 752,358 Q735,300 692,265 Q648,238 605,240 Q540,235 455,255 Z"
+        fill="url(#grad-wall)" stroke="#8D6E63" stroke-width="3" filter="url(#shadow)" opacity="0.95"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 4 — HEART CHAMBERS (inside the wall)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Right Atrium (viewer's left, anatomical right) — deoxygenated -->
+  <g id="right-atrium"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-004"
+     cursor="pointer">
+    <path d="M472,272 Q448,305 443,348 Q440,382 455,405 Q478,425 520,416
+             Q546,410 555,388 Q562,352 550,305 Q538,275 516,266 Q494,258 472,272 Z"
+          fill="url(#grad-deoxy)" stroke="#3949AB" stroke-width="2" opacity="0.9"/>
+    <text x="496" y="350" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#fff" font-weight="700">RA</text>
+  </g>
+
+  <!-- Left Atrium (viewer's right, anatomical left) — oxygenated -->
+  <g id="left-atrium"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-003"
+     cursor="pointer">
+    <path d="M625,268 Q600,290 596,328 Q593,362 608,392 Q625,412 658,406
+             Q692,398 708,372 Q720,342 712,305 Q704,278 682,265 Q658,255 625,268 Z"
+          fill="url(#grad-oxy)" stroke="#C62828" stroke-width="2" opacity="0.9"/>
+    <text x="652" y="345" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" fill="#fff" font-weight="700">LA</text>
+  </g>
+
+  <!-- Right Ventricle (viewer's left, anatomical right) — deoxygenated, thinner wall -->
+  <g id="right-ventricle"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-002"
+     cursor="pointer">
+    <path d="M445,425 Q425,468 420,520 Q418,565 435,600 Q460,635 502,642
+             Q535,645 555,628 Q568,612 572,578 Q576,535 570,480 Q564,448 550,428 Q532,412 445,425 Z"
+          fill="url(#grad-deoxy)" stroke="#3949AB" stroke-width="2" opacity="0.85"/>
+    <text x="495" y="535" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#fff" font-weight="700">RV</text>
+  </g>
+
+  <!-- Left Ventricle (viewer's right, anatomical left) — oxygenated, thick wall -->
+  <g id="left-ventricle"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-001"
+     cursor="pointer">
+    <path d="M595,418 Q582,445 578,488 Q576,530 585,575 Q596,612 620,635
+             Q648,652 680,644 Q714,630 732,596 Q748,562 750,515 Q752,465 740,428
+             Q728,405 702,398 Q660,392 595,418 Z"
+          fill="url(#grad-oxy)" stroke="#C62828" stroke-width="2.5" opacity="0.9"/>
+    <text x="660" y="530" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" fill="#fff" font-weight="700">LV</text>
+    <!-- Thick wall indicator (rat LV wall is proportionally thick) -->
+    <path d="M735,430 Q752,465 755,515 Q752,565 738,598"
+          fill="none" stroke="#A1887F" stroke-width="12" opacity="0.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 5 — INTERVENTRICULAR SEPTUM
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <g id="interventricular-septum"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-012"
+     cursor="pointer">
+    <path d="M572,422 Q575,478 577,530 Q580,585 586,632"
+          fill="none" stroke="url(#grad-septum)" stroke-width="14" stroke-linecap="round" opacity="0.85"/>
+    <text x="552" y="612" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#5D4037" font-weight="600" transform="rotate(-85 552 612)">IV SEPTUM</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 6 — HEART VALVES
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Tricuspid Valve — between RA and RV -->
+  <g id="tricuspid-valve"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-011"
+     cursor="pointer">
+    <ellipse cx="502" cy="422" rx="28" ry="9" fill="url(#grad-valve)" stroke="#F9A825" stroke-width="2" transform="rotate(-8 502 422)"/>
+    <!-- 3 cusps indicator -->
+    <line x1="486" y1="422" x2="486" y2="413" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <line x1="502" y1="420" x2="502" y2="411" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <line x1="518" y1="422" x2="518" y2="413" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <text x="458" y="440" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#F57F17" font-weight="600">TRICUSPID</text>
+  </g>
+
+  <!-- Mitral (Bicuspid) Valve — between LA and LV -->
+  <g id="mitral-valve"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-010"
+     cursor="pointer">
+    <ellipse cx="648" cy="412" rx="26" ry="9" fill="url(#grad-valve)" stroke="#F9A825" stroke-width="2" transform="rotate(8 648 412)"/>
+    <!-- 2 cusps indicator -->
+    <line x1="637" y1="410" x2="637" y2="401" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <line x1="659" y1="410" x2="659" y2="401" stroke="#F57F17" stroke-width="2" stroke-linecap="round"/>
+    <text x="668" y="426" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#F57F17" font-weight="600">MITRAL</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LAYER 7 — CORONARY ARTERIES (surface of heart)
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <g id="coronary-arteries"
+     data-system="cardiovascular"
+     data-structure-id="struct-rat-cv-013"
+     cursor="pointer">
+    <!-- Left coronary artery — runs along left AV groove -->
+    <path d="M606,402 Q624,428 648,455 Q672,480 690,522 Q698,558 695,595"
+          fill="none" stroke="url(#grad-coronary)" stroke-width="4.5" stroke-linecap="round" opacity="0.9"/>
+    <!-- Left anterior descending -->
+    <path d="M648,455 Q632,488 620,530 Q612,568 608,610"
+          fill="none" stroke="url(#grad-coronary)" stroke-width="3.5" stroke-linecap="round" opacity="0.8"/>
+    <!-- Right coronary artery — runs along right AV groove -->
+    <path d="M602,402 Q580,425 555,452 Q530,480 514,522 Q506,558 510,595"
+          fill="none" stroke="url(#grad-coronary)" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+    <text x="706" y="545" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#E64A19" font-style="italic">Coronary AA.</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       ANNOTATIONS — Directional labels and flow arrows
+       ═══════════════════════════════════════════════════════════════ -->
+
+  <!-- Flow: SVC to RA -->
+  <line x1="528" y1="215" x2="512" y2="278" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  <!-- Flow: RA to RV (through tricuspid) -->
+  <line x1="496" y1="408" x2="496" y2="462" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  <!-- Flow: RV to Pulmonary trunk -->
+  <line x1="515" y1="435" x2="515" y2="318" stroke="#5C6BC0" stroke-width="1.5" marker-end="url(#arrow-blue)" opacity="0.5"/>
+  <!-- Flow: Pulmonary veins to LA -->
+  <line x1="748" y1="320" x2="700" y2="320" stroke="#E53935" stroke-width="1.5" marker-end="url(#arrow-red)" opacity="0.5"/>
+  <!-- Flow: LA to LV (through mitral) -->
+  <line x1="655" y1="408" x2="655" y2="462" stroke="#E53935" stroke-width="1.5" marker-end="url(#arrow-red)" opacity="0.5"/>
+  <!-- Flow: LV to Aorta -->
+  <line x1="606" y1="425" x2="606" y2="315" stroke="#E53935" stroke-width="1.5" marker-end="url(#arrow-red)" opacity="0.5"/>
+
+  <!-- Orientation compass -->
+  <g transform="translate(80, 840)" opacity="0.6">
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#6D4C41" font-weight="600">ORIENTATION</text>
+    <text x="0" y="14" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">S = Superior (cranial) ↑</text>
+    <text x="0" y="26" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">I = Inferior (caudal) ↓</text>
+    <text x="0" y="38" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#8D6E63">R = Right (viewer left) ← → L = Left (viewer right)</text>
+  </g>
+
+  <!-- Legend -->
+  <g transform="translate(900, 730)" opacity="0.7">
+    <text x="0" y="0" font-family="Inter, system-ui, sans-serif" font-size="11" fill="#4E342E" font-weight="700">LEGEND</text>
+    <rect x="0" y="8" width="14" height="10" rx="2" fill="url(#grad-oxy)"/>
+    <text x="20" y="17" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Oxygenated blood</text>
+    <rect x="0" y="24" width="14" height="10" rx="2" fill="url(#grad-deoxy)"/>
+    <text x="20" y="33" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Deoxygenated blood</text>
+    <rect x="0" y="40" width="14" height="10" rx="2" fill="url(#grad-valve)"/>
+    <text x="20" y="49" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Heart valves</text>
+    <rect x="0" y="56" width="14" height="10" rx="2" fill="url(#grad-coronary)"/>
+    <text x="20" y="65" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Coronary arteries</text>
+    <rect x="0" y="72" width="14" height="10" rx="2" fill="url(#grad-septum)"/>
+    <text x="20" y="81" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#4E342E">Septum / myocardium</text>
+  </g>
+
+  <!-- Copyright / model info -->
+  <text x="600" y="892" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#BCAAA4">
+    AnatoView v1.0.0 — Norway Rat Cardiovascular Model — 14 labeled structures
+  </text>
+
+</svg>

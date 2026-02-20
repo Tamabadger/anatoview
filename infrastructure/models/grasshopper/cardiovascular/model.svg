@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AnatoView — Grasshopper Open Circulatory System (Lateral Sagittal View)
+  Anatomical model SVG for interactive dissection lab.
+
+  Orientation: Lateral (side) view, head on LEFT, abdomen extending RIGHT.
+  Dorsal surface at top, ventral surface at bottom.
+
+  Each interactive structure has:
+    id          = slug matching svgElementId in the database
+    data-system = "cardiovascular"
+    data-structure-id = UUID from prisma/seed.ts
+
+  10 structures total, organized in rendering order (back-to-front):
+    1.  Dorsal Heart           — struct-grasshopper-cv-001
+    2.  Dorsal Aorta           — struct-grasshopper-cv-002
+    3.  Ostia                  — struct-grasshopper-cv-003
+    4.  Hemocoel               — struct-grasshopper-cv-004
+    5.  Alary Muscles          — struct-grasshopper-cv-005
+    6.  Tracheal Trunks        — struct-grasshopper-cv-006
+    7.  Spiracles              — struct-grasshopper-cv-007
+    8.  Air Sacs               — struct-grasshopper-cv-008
+    9.  Gastric Caeca          — struct-grasshopper-cv-009
+    10. Malpighian Tubules     — struct-grasshopper-cv-010
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1300 600"
+     width="1300"
+     height="600"
+     role="img"
+     aria-label="Grasshopper open circulatory system lateral sagittal view">
+
+  <title>GRASSHOPPER OPEN CIRCULATORY SYSTEM - LATERAL SAGITTAL VIEW</title>
+  <desc>Interactive SVG of a grasshopper showing the open circulatory system with dorsal heart, aorta, hemocoel, tracheal system, and associated organs in lateral view for comparative anatomy study.</desc>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       DEFINITIONS — gradients, filters, patterns
+       ═══════════════════════════════════════════════════════════════ -->
+  <defs>
+    <!-- Hemolymph / hemocoel gradient (light blue) -->
+    <linearGradient id="grad-hemolymph" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B3E5FC"/>
+      <stop offset="100%" stop-color="#03A9F4"/>
+    </linearGradient>
+
+    <!-- Dorsal heart gradient (red) -->
+    <linearGradient id="grad-heart" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF5350"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </linearGradient>
+
+    <!-- Dorsal aorta gradient (orange-red) -->
+    <linearGradient id="grad-aorta" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF7043"/>
+      <stop offset="100%" stop-color="#E64A19"/>
+    </linearGradient>
+
+    <!-- Exoskeleton / body wall gradient (brown) -->
+    <linearGradient id="grad-exoskeleton" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#795548"/>
+      <stop offset="100%" stop-color="#4E342E"/>
+    </linearGradient>
+
+    <!-- Tracheal system gradient (pale blue) -->
+    <linearGradient id="grad-trachea" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E1F5FE"/>
+      <stop offset="100%" stop-color="#81D4FA"/>
+    </linearGradient>
+
+    <!-- Alary muscles gradient (salmon) -->
+    <linearGradient id="grad-muscle" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFAB91"/>
+      <stop offset="100%" stop-color="#FF7043"/>
+    </linearGradient>
+
+    <!-- Digestive structures gradient (orange) -->
+    <linearGradient id="grad-digestive" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFCC80"/>
+      <stop offset="100%" stop-color="#EF6C00"/>
+    </linearGradient>
+
+    <!-- Malpighian tubules / excretory gradient (green) -->
+    <linearGradient id="grad-excretory" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C5E1A5"/>
+      <stop offset="100%" stop-color="#7CB342"/>
+    </linearGradient>
+
+    <!-- Drop shadow for depth -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+
+    <!-- Hover glow -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Arrowhead marker for flow arrows -->
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#0277BD"/>
+    </marker>
+
+    <!-- Arrowhead for air flow -->
+    <marker id="arrowhead-air" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#0288D1"/>
+    </marker>
+
+    <!-- Arrowhead for hemolymph return -->
+    <marker id="arrowhead-return" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#0288D1" opacity="0.6"/>
+    </marker>
+  </defs>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BACKGROUND
+       ═══════════════════════════════════════════════════════════════ -->
+  <rect width="1300" height="600" fill="#FFFDE7" rx="8"/>
+
+  <!-- Title -->
+  <text x="650" y="32" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-size="18" font-weight="bold" fill="#3E2723" letter-spacing="1">
+    GRASSHOPPER OPEN CIRCULATORY SYSTEM &#8212; LATERAL SAGITTAL VIEW
+  </text>
+
+  <!-- Orientation labels -->
+  <text x="20" y="290" font-family="Arial, sans-serif" font-size="13" fill="#5D4037"
+        font-weight="bold" font-style="italic">ANTERIOR</text>
+  <text x="1220" y="290" font-family="Arial, sans-serif" font-size="13" fill="#5D4037"
+        font-weight="bold" font-style="italic">POSTERIOR</text>
+  <text x="650" y="58" text-anchor="middle" font-family="Arial, sans-serif" font-size="12"
+        fill="#5D4037" font-weight="bold" font-style="italic">DORSAL</text>
+  <text x="650" y="555" text-anchor="middle" font-family="Arial, sans-serif" font-size="12"
+        fill="#5D4037" font-weight="bold" font-style="italic">VENTRAL</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BODY OUTLINE — Lateral (side) view of grasshopper
+       Head (left), Thorax (3 segments), Abdomen (11 segments)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="body-outline">
+    <!-- === FULL BODY EXOSKELETON — single continuous lateral outline === -->
+    <!-- Head -->
+    <path d="
+      M 130,220
+      C 95,210 65,230 55,260
+      C 48,280 50,310 60,330
+      C 68,355 90,365 115,365
+      L 130,365
+    " fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2.5" opacity="0.35"/>
+
+    <!-- Compound eye -->
+    <ellipse cx="85" cy="250" rx="25" ry="22" fill="#1B5E20" stroke="#3E2723" stroke-width="1.5" opacity="0.7"/>
+    <ellipse cx="85" cy="250" rx="18" ry="16" fill="#2E7D32" opacity="0.5"/>
+
+    <!-- Antennae -->
+    <path d="M 100,225 C 80,180 50,150 25,120" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="25" cy="118" r="3" fill="#5D4037"/>
+
+    <!-- Mouthparts -->
+    <path d="M 65,340 L 55,365 L 50,370" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+    <path d="M 75,345 L 70,370 L 68,378" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Prothorax (segment 1) -->
+    <path d="
+      M 130,200
+      L 210,190
+      L 210,380
+      L 130,375
+    " fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2.5" opacity="0.35"/>
+    <!-- Pronotum (dorsal shield) -->
+    <path d="
+      M 125,205
+      C 145,175 180,170 215,185
+      L 210,190
+      L 130,200
+      Z
+    " fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.55"/>
+
+    <!-- Mesothorax (segment 2) -->
+    <path d="
+      M 210,190
+      L 310,180
+      L 310,385
+      L 210,380
+    " fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2.5" opacity="0.30"/>
+
+    <!-- Metathorax (segment 3) -->
+    <path d="
+      M 310,180
+      L 420,175
+      L 420,390
+      L 310,385
+    " fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2.5" opacity="0.30"/>
+
+    <!-- Forewing (tegmen) — narrow, leathery -->
+    <path d="
+      M 260,182
+      C 320,125 520,105 700,115
+      C 720,116 730,125 720,135
+      C 620,145 400,158 280,185
+      Z
+    " fill="#8D6E63" stroke="#5D4037" stroke-width="1.5" opacity="0.35" fill-opacity="0.4"/>
+
+    <!-- Hindwing (membranous, folded) — visible portion -->
+    <path d="
+      M 350,178
+      C 420,140 580,125 680,130
+      C 690,131 690,140 680,145
+      C 560,155 420,168 360,180
+      Z
+    " fill="#A1887F" stroke="#6D4C41" stroke-width="1" opacity="0.25" fill-opacity="0.3"/>
+
+    <!-- Abdomen — 11 segments tapering to posterior -->
+    <!-- Segment 1 -->
+    <path d="M 420,175 L 495,172 L 495,385 L 420,390 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.28"/>
+    <!-- Segment 2 -->
+    <path d="M 495,172 L 565,170 L 565,383 L 495,385 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.30"/>
+    <!-- Segment 3 -->
+    <path d="M 565,170 L 635,170 L 635,380 L 565,383 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.28"/>
+    <!-- Segment 4 -->
+    <path d="M 635,170 L 705,172 L 705,378 L 635,380 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.30"/>
+    <!-- Segment 5 -->
+    <path d="M 705,172 L 775,175 L 775,375 L 705,378 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.28"/>
+    <!-- Segment 6 -->
+    <path d="M 775,175 L 845,180 L 845,370 L 775,375 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.30"/>
+    <!-- Segment 7 -->
+    <path d="M 845,180 L 910,188 L 910,365 L 845,370 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.28"/>
+    <!-- Segment 8 -->
+    <path d="M 910,188 L 970,198 L 970,358 L 910,365 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.30"/>
+    <!-- Segment 9 -->
+    <path d="M 970,198 L 1025,210 L 1025,348 L 970,358 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.28"/>
+    <!-- Segment 10 -->
+    <path d="M 1025,210 L 1070,225 L 1070,338 L 1025,348 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.30"/>
+    <!-- Segment 11 (terminal + cerci) -->
+    <path d="M 1070,225 L 1115,245 C 1130,260 1130,300 1115,315 L 1070,338 Z"
+          fill="url(#grad-exoskeleton)" stroke="#3E2723" stroke-width="2" opacity="0.28"/>
+    <!-- Cerci -->
+    <path d="M 1115,260 L 1145,248 L 1150,252" fill="none" stroke="#5D4037" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M 1115,300 L 1145,312 L 1150,310" fill="none" stroke="#5D4037" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- Segment boundary lines (dorsal side, subtle) for abdomen -->
+    <line x1="495" y1="172" x2="495" y2="385" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="565" y1="170" x2="565" y2="383" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="635" y1="170" x2="635" y2="380" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="705" y1="172" x2="705" y2="378" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="775" y1="175" x2="775" y2="375" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="845" y1="180" x2="845" y2="370" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="910" y1="188" x2="910" y2="365" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="970" y1="198" x2="970" y2="358" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="1025" y1="210" x2="1025" y2="348" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+    <line x1="1070" y1="225" x2="1070" y2="338" stroke="#3E2723" stroke-width="0.8" opacity="0.25" stroke-dasharray="4 3"/>
+
+    <!-- LEGS -->
+    <!-- Foreleg (prothoracic) -->
+    <g opacity="0.6">
+      <path d="M 170,370 L 155,420 L 140,465 L 130,500" fill="none" stroke="#5D4037" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 130,500 L 115,520 L 100,530" fill="none" stroke="#5D4037" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- Midleg (mesothoracic) -->
+    <g opacity="0.6">
+      <path d="M 260,378 L 245,430 L 230,475 L 220,510" fill="none" stroke="#5D4037" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 220,510 L 205,530 L 190,540" fill="none" stroke="#5D4037" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- Hindleg (metathoracic) — large jumping leg -->
+    <g opacity="0.6">
+      <!-- Femur — thick, muscular -->
+      <path d="M 380,385 L 420,340 L 480,310 L 540,330"
+            fill="none" stroke="#5D4037" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Femur muscle mass outline -->
+      <path d="M 390,380 C 400,350 440,310 490,305 C 520,310 545,325 540,335
+               C 530,345 490,340 450,345 C 420,355 400,375 390,380 Z"
+            fill="#6D4C41" opacity="0.25" stroke="#5D4037" stroke-width="1"/>
+      <!-- Tibia — long, thin with spines -->
+      <path d="M 540,330 L 520,420 L 505,500"
+            fill="none" stroke="#5D4037" stroke-width="3" stroke-linecap="round"/>
+      <!-- Tibial spines -->
+      <line x1="530" y1="370" x2="540" y2="365" stroke="#5D4037" stroke-width="1.5"/>
+      <line x1="525" y1="395" x2="535" y2="390" stroke="#5D4037" stroke-width="1.5"/>
+      <line x1="520" y1="420" x2="530" y2="415" stroke="#5D4037" stroke-width="1.5"/>
+      <line x1="515" y1="445" x2="525" y2="440" stroke="#5D4037" stroke-width="1.5"/>
+      <!-- Tarsus -->
+      <path d="M 505,500 L 490,520 L 475,535" fill="none" stroke="#5D4037" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 4: HEMOCOEL — open body cavity (background wash)
+       Rendered first so other structures overlay it
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="hemocoel" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-004" cursor="pointer">
+    <!-- The hemocoel: the open body cavity filled with hemolymph -->
+    <path d="
+      M 130,220
+      C 95,215 70,240 62,270
+      C 55,300 60,335 72,355
+      L 130,370
+      L 210,378 L 310,383 L 420,388
+      L 495,383 L 565,381 L 635,378 L 705,376 L 775,373 L 845,368 L 910,363 L 970,356
+      L 1025,346 L 1070,336
+      C 1125,310 1128,255 1070,227
+      L 1025,212 L 970,200 L 910,190 L 845,182 L 775,177 L 705,174 L 635,172
+      L 565,172 L 495,174 L 420,177 L 310,182 L 210,192 L 130,202
+      Z
+    " fill="url(#grad-hemolymph)" fill-opacity="0.15" stroke="#03A9F4" stroke-width="0" pointer-events="none"/>
+    <!-- Clickable border outline for hemocoel (visible interactive element) -->
+    <path d="
+      M 130,220
+      C 95,215 70,240 62,270
+      C 55,300 60,335 72,355
+      L 130,370
+      L 210,378 L 310,383 L 420,388
+      L 495,383 L 565,381 L 635,378 L 705,376 L 775,373 L 845,368 L 910,363 L 970,356
+      L 1025,346 L 1070,336
+      C 1125,310 1128,255 1070,227
+      L 1025,212 L 970,200 L 910,190 L 845,182 L 775,177 L 705,174 L 635,172
+      L 565,172 L 495,174 L 420,177 L 310,182 L 210,192 L 130,202
+      Z
+    " fill="none" stroke="#03A9F4" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.4"/>
+    <text x="480" y="320" font-family="Arial, sans-serif" font-size="11" fill="#0277BD" opacity="0.5"
+          font-style="italic">hemocoel (body cavity)</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 9: GASTRIC CAECA — finger-like digestive pouches
+       at junction of foregut and midgut
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="gastric-caeca" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-009" cursor="pointer">
+    <!-- Digestive tract reference (midgut region) -->
+    <path d="M 280,290 L 420,285 L 560,290 L 680,295 L 750,300"
+          fill="none" stroke="#EF6C00" stroke-width="14" stroke-linecap="round" opacity="0.2"/>
+
+    <!-- Caeca pouches (6 finger-like projections around foregut-midgut junction) -->
+    <path d="M 340,280 C 330,260 320,240 315,225 C 312,218 318,215 322,220 C 330,235 340,255 345,275"
+          fill="url(#grad-digestive)" stroke="#E65100" stroke-width="1.5" opacity="0.8"/>
+    <path d="M 360,278 C 355,255 360,235 365,218 C 367,212 373,212 372,218 C 370,235 368,258 365,275"
+          fill="url(#grad-digestive)" stroke="#E65100" stroke-width="1.5" opacity="0.8"/>
+    <path d="M 380,280 C 385,258 395,240 400,225 C 402,218 408,220 406,226 C 400,242 392,262 385,278"
+          fill="url(#grad-digestive)" stroke="#E65100" stroke-width="1.5" opacity="0.8"/>
+    <!-- Ventral caeca -->
+    <path d="M 340,300 C 330,320 325,340 320,355 C 318,362 324,364 326,358 C 330,342 338,322 345,303"
+          fill="url(#grad-digestive)" stroke="#E65100" stroke-width="1.5" opacity="0.8"/>
+    <path d="M 365,302 C 360,325 358,345 355,360 C 354,367 360,368 361,362 C 363,345 365,325 367,304"
+          fill="url(#grad-digestive)" stroke="#E65100" stroke-width="1.5" opacity="0.8"/>
+    <path d="M 390,300 C 395,322 400,342 405,355 C 407,362 413,360 411,354 C 405,338 398,318 393,302"
+          fill="url(#grad-digestive)" stroke="#E65100" stroke-width="1.5" opacity="0.8"/>
+
+    <text x="350" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="10"
+          fill="#E65100" font-weight="bold">Gastric Caeca</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 10: MALPIGHIAN TUBULES — thread-like excretory organs
+       at midgut-hindgut junction
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="malpighian-tubules" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-010" cursor="pointer">
+    <!-- Tubules originate at midgut-hindgut junction (~x=750) and extend through hemocoel -->
+    <path d="M 750,298 C 730,270 700,250 680,235 C 660,220 640,225 630,240"
+          fill="none" stroke="url(#grad-excretory)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+    <path d="M 750,298 C 740,265 720,240 710,220 C 700,205 690,208 688,218"
+          fill="none" stroke="url(#grad-excretory)" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+    <path d="M 750,298 C 760,270 775,245 790,228 C 800,218 808,222 805,232"
+          fill="none" stroke="url(#grad-excretory)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+    <path d="M 750,298 C 755,260 770,235 780,218 C 788,208 795,212 792,222"
+          fill="none" stroke="url(#grad-excretory)" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+    <!-- Ventral tubules -->
+    <path d="M 750,305 C 730,335 705,355 685,365 C 670,372 665,368 670,360"
+          fill="none" stroke="url(#grad-excretory)" stroke-width="3" stroke-linecap="round" opacity="0.85"/>
+    <path d="M 750,305 C 762,340 775,360 790,370 C 800,375 805,370 800,362"
+          fill="none" stroke="url(#grad-excretory)" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+
+    <!-- Junction point marker -->
+    <circle cx="750" cy="300" r="5" fill="#7CB342" stroke="#558B2F" stroke-width="1.5" opacity="0.9"/>
+
+    <text x="750" y="215" text-anchor="middle" font-family="Arial, sans-serif" font-size="10"
+          fill="#558B2F" font-weight="bold">Malpighian Tubules</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 6: TRACHEAL TRUNKS — branching air tubes
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="tracheal-trunks" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-006" cursor="pointer">
+    <!-- Main lateral tracheal trunk running length of body -->
+    <path d="
+      M 140,280
+      L 210,278 L 310,275 L 420,272 L 495,272 L 565,273 L 635,275 L 705,278
+      L 775,282 L 845,287 L 910,293 L 970,300 L 1025,308 L 1070,318
+    " fill="none" stroke="url(#grad-trachea)" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+
+    <!-- Dorsal tracheal trunk -->
+    <path d="
+      M 140,240
+      L 210,235 L 310,230 L 420,228 L 495,228 L 565,230 L 635,232 L 705,235
+      L 775,240 L 845,246 L 910,254 L 970,264 L 1025,275
+    " fill="none" stroke="url(#grad-trachea)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+
+    <!-- Ventral tracheal trunk -->
+    <path d="
+      M 140,340
+      L 210,342 L 310,345 L 420,348 L 495,348 L 565,347 L 635,345 L 705,343
+      L 775,340 L 845,336 L 910,330 L 970,324 L 1025,316
+    " fill="none" stroke="url(#grad-trachea)" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+
+    <!-- Transverse connectors (dorsal-ventral connections) -->
+    <line x1="260" y1="233" x2="260" y2="343" stroke="#81D4FA" stroke-width="2" opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="420" y1="228" x2="420" y2="348" stroke="#81D4FA" stroke-width="2" opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="565" y1="230" x2="565" y2="347" stroke="#81D4FA" stroke-width="2" opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="705" y1="235" x2="705" y2="343" stroke="#81D4FA" stroke-width="2" opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="845" y1="246" x2="845" y2="336" stroke="#81D4FA" stroke-width="2" opacity="0.35" stroke-dasharray="3 3"/>
+    <line x1="970" y1="264" x2="970" y2="324" stroke="#81D4FA" stroke-width="2" opacity="0.35" stroke-dasharray="3 3"/>
+
+    <!-- Branch to head -->
+    <path d="M 140,280 C 120,275 105,270 90,270" fill="none" stroke="#81D4FA" stroke-width="3" opacity="0.5" stroke-linecap="round"/>
+
+    <text x="600" y="265" text-anchor="middle" font-family="Arial, sans-serif" font-size="10"
+          fill="#0277BD" font-weight="bold" opacity="0.7">Tracheal Trunks</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 8: AIR SACS — expanded portions of tracheal system
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="air-sacs" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-008" cursor="pointer">
+    <!-- Thoracic air sacs -->
+    <ellipse cx="240" cy="290" rx="22" ry="15" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="1.5" opacity="0.55"/>
+    <ellipse cx="350" cy="285" rx="20" ry="13" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="1.5" opacity="0.55"/>
+
+    <!-- Abdominal air sacs -->
+    <ellipse cx="530" cy="278" rx="18" ry="12" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="1.5" opacity="0.50"/>
+    <ellipse cx="670" cy="282" rx="16" ry="11" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="1.5" opacity="0.50"/>
+    <ellipse cx="810" cy="290" rx="15" ry="10" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="1.5" opacity="0.50"/>
+    <ellipse cx="940" cy="300" rx="14" ry="9" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="1.5" opacity="0.50"/>
+
+    <text x="240" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="9"
+          fill="#0277BD" font-weight="bold">Air Sac</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 5: ALARY MUSCLES — fan-shaped muscles suspending heart
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="alary-muscles" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-005" cursor="pointer">
+    <!-- Pairs of alary muscles — fan from body wall to heart tube -->
+    <!-- Segment 1-2 boundary -->
+    <path d="M 495,172 C 498,185 500,192 500,196 L 490,200 C 488,195 486,185 483,175"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+    <path d="M 495,385 C 498,370 500,358 500,350 L 490,346 C 488,354 486,368 483,382"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.4"/>
+
+    <!-- Segment 2-3 -->
+    <path d="M 565,170 C 568,183 570,192 570,196 L 560,200 C 558,194 556,183 553,172"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+
+    <!-- Segment 3-4 -->
+    <path d="M 635,170 C 638,183 640,192 640,196 L 630,200 C 628,194 626,183 623,172"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+
+    <!-- Segment 4-5 -->
+    <path d="M 705,172 C 708,185 710,193 710,198 L 700,202 C 698,196 696,186 693,174"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+
+    <!-- Segment 5-6 -->
+    <path d="M 775,175 C 778,188 780,196 780,200 L 770,204 C 768,198 766,189 763,177"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+
+    <!-- Segment 6-7 -->
+    <path d="M 845,180 C 848,192 850,200 850,204 L 840,208 C 838,202 836,193 833,182"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+
+    <!-- Segment 7-8 -->
+    <path d="M 910,188 C 913,200 915,207 915,212 L 905,216 C 903,210 901,201 898,190"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+
+    <!-- Segment 8-9 -->
+    <path d="M 970,198 C 972,208 974,215 974,220 L 964,224 C 963,218 961,209 958,200"
+          fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="1" opacity="0.7"/>
+
+    <!-- Wider fan-shaped muscle detail at segment 3-4 as representative -->
+    <path d="M 632,172 L 620,198 L 610,195 L 623,172" fill="url(#grad-muscle)" stroke="none" opacity="0.5"/>
+    <path d="M 638,172 L 650,198 L 660,195 L 647,172" fill="url(#grad-muscle)" stroke="none" opacity="0.5"/>
+
+    <text x="730" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="10"
+          fill="#E64A19" font-weight="bold">Alary Muscles</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 1: DORSAL HEART — tubular organ along dorsal abdomen
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="dorsal-heart" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-001" cursor="pointer"
+     filter="url(#shadow)">
+    <!-- Heart tube — elongated along dorsal abdomen surface -->
+    <path d="
+      M 460,198
+      C 470,192 490,190 510,192
+      L 570,193
+      L 640,194
+      L 710,196
+      L 780,199
+      L 850,204
+      L 915,210
+      L 975,218
+      L 1020,226
+      C 1035,230 1040,238 1038,245
+      C 1035,250 1025,252 1018,248
+      L 975,238
+      L 915,230
+      L 850,224
+      L 780,219
+      L 710,216
+      L 640,214
+      L 570,213
+      L 510,212
+      C 490,211 472,210 462,214
+      C 455,218 453,210 455,204
+      Z
+    " fill="url(#grad-heart)" stroke="#B71C1C" stroke-width="2" opacity="0.85"/>
+
+    <!-- Chamber divisions (internal septa/valves) -->
+    <line x1="530" y1="193" x2="530" y2="212" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+    <line x1="600" y1="194" x2="600" y2="213" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+    <line x1="670" y1="195" x2="670" y2="215" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+    <line x1="740" y1="197" x2="740" y2="217" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+    <line x1="810" y1="201" x2="810" y2="222" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+    <line x1="880" y1="206" x2="880" y2="227" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+    <line x1="945" y1="214" x2="945" y2="234" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+    <line x1="1000" y1="222" x2="1000" y2="242" stroke="#B71C1C" stroke-width="1.5" opacity="0.5"/>
+
+    <text x="770" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="11"
+          fill="#B71C1C" font-weight="bold">Dorsal Heart (Tubular)</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 3: OSTIA — paired openings in heart wall
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="ostia" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-003" cursor="pointer">
+    <!-- Ostia are slit-like lateral openings in each heart chamber -->
+    <!-- Left side of each chamber (visible in lateral view) -->
+    <g opacity="0.9">
+      <!-- Ostium at segment boundaries -->
+      <ellipse cx="530" cy="203" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5" transform="rotate(-5,530,203)"/>
+      <ellipse cx="600" cy="204" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5" transform="rotate(-4,600,204)"/>
+      <ellipse cx="670" cy="205" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5" transform="rotate(-3,670,205)"/>
+      <ellipse cx="740" cy="207" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5" transform="rotate(-2,740,207)"/>
+      <ellipse cx="810" cy="212" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5" transform="rotate(-1,810,212)"/>
+      <ellipse cx="880" cy="217" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5"/>
+      <ellipse cx="945" cy="224" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5" transform="rotate(1,945,224)"/>
+      <ellipse cx="1000" cy="232" rx="6" ry="3" fill="#FFCDD2" stroke="#C62828" stroke-width="1.5" transform="rotate(2,1000,232)"/>
+    </g>
+
+    <!-- Small inflow arrows at ostia -->
+    <g opacity="0.6">
+      <path d="M 530,215 L 530,209" fill="none" stroke="#C62828" stroke-width="1" marker-end="url(#arrowhead)"/>
+      <path d="M 670,218 L 670,211" fill="none" stroke="#C62828" stroke-width="1" marker-end="url(#arrowhead)"/>
+      <path d="M 810,225 L 810,218" fill="none" stroke="#C62828" stroke-width="1" marker-end="url(#arrowhead)"/>
+      <path d="M 945,238 L 945,230" fill="none" stroke="#C62828" stroke-width="1" marker-end="url(#arrowhead)"/>
+    </g>
+
+    <text x="880" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="10"
+          fill="#C62828" font-weight="bold">Ostia</text>
+    <line x1="880" y1="250" x2="880" y2="222" stroke="#C62828" stroke-width="0.8" opacity="0.5" stroke-dasharray="2 2"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 2: DORSAL AORTA — extends anteriorly from heart to head
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="dorsal-aorta" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-002" cursor="pointer"
+     filter="url(#shadow)">
+    <!-- Aorta — tube from anterior end of heart forward to head -->
+    <path d="
+      M 460,200
+      C 440,198 400,195 350,195
+      L 280,198
+      L 210,202
+      L 155,210
+      L 125,218
+      C 118,220 115,225 118,230
+      C 120,234 125,235 130,232
+      L 160,225
+      L 210,218
+      L 280,214
+      L 350,211
+      C 400,211 440,212 460,214
+    " fill="url(#grad-aorta)" stroke="#BF360C" stroke-width="1.5" opacity="0.85"/>
+
+    <!-- Open end of aorta in head (hemolymph dumps into hemocoel) -->
+    <path d="M 120,222 C 110,218 105,225 108,232 C 112,238 118,235 120,232"
+          fill="#FF7043" stroke="#BF360C" stroke-width="1" opacity="0.7"/>
+
+    <text x="290" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="11"
+          fill="#BF360C" font-weight="bold">Dorsal Aorta</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       STRUCTURE 7: SPIRACLES — small openings along body sides
+       2 thoracic pairs + 8 abdominal pairs = 10 pairs (show lateral row)
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="spiracles" data-system="cardiovascular" data-structure-id="struct-grasshopper-cv-007" cursor="pointer">
+    <!-- Thoracic spiracles (2) -->
+    <ellipse cx="185" cy="310" rx="7" ry="5" fill="#FFF9C4" stroke="#F57F17" stroke-width="2" opacity="0.9"/>
+    <ellipse cx="185" cy="310" rx="3" ry="1.5" fill="#F57F17" opacity="0.6"/>
+
+    <ellipse cx="285" cy="315" rx="7" ry="5" fill="#FFF9C4" stroke="#F57F17" stroke-width="2" opacity="0.9"/>
+    <ellipse cx="285" cy="315" rx="3" ry="1.5" fill="#F57F17" opacity="0.6"/>
+
+    <!-- Abdominal spiracles (8) -->
+    <ellipse cx="460" cy="318" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="460" cy="318" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <ellipse cx="530" cy="318" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="530" cy="318" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <ellipse cx="600" cy="317" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="600" cy="317" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <ellipse cx="670" cy="315" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="670" cy="315" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <ellipse cx="740" cy="312" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="740" cy="312" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <ellipse cx="810" cy="308" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="810" cy="308" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <ellipse cx="875" cy="303" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="875" cy="303" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <ellipse cx="938" cy="296" rx="6" ry="4.5" fill="#FFF9C4" stroke="#F57F17" stroke-width="1.8" opacity="0.85"/>
+    <ellipse cx="938" cy="296" rx="2.5" ry="1.2" fill="#F57F17" opacity="0.5"/>
+
+    <text x="185" y="335" text-anchor="middle" font-family="Arial, sans-serif" font-size="9"
+          fill="#F57F17" font-weight="bold">Spiracles</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FLOW ARROWS — hemolymph circulation & air flow
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="flow-arrows" opacity="0.6">
+    <!-- Forward flow through aorta (anterior) -->
+    <path d="M 450,185 C 380,178 300,180 200,185"
+          fill="none" stroke="#0277BD" stroke-width="2" stroke-dasharray="6 3"
+          marker-end="url(#arrowhead)"/>
+    <text x="320" y="178" text-anchor="middle" font-family="Arial, sans-serif" font-size="9"
+          fill="#0277BD" font-style="italic">hemolymph flow (anterior)</text>
+
+    <!-- Hemolymph dumps into hemocoel at head -->
+    <path d="M 120,240 C 115,260 120,290 135,310"
+          fill="none" stroke="#0288D1" stroke-width="1.5" stroke-dasharray="4 3"
+          marker-end="url(#arrowhead-return)"/>
+
+    <!-- Return flow through body cavity (posterior, ventral) -->
+    <path d="M 200,380 C 350,395 600,400 850,385 C 950,378 1020,365 1050,350"
+          fill="none" stroke="#0288D1" stroke-width="2" stroke-dasharray="6 3"
+          marker-end="url(#arrowhead-return)"/>
+    <text x="620" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="9"
+          fill="#0288D1" font-style="italic">hemolymph return (through hemocoel)</text>
+
+    <!-- Return re-enters heart via ostia (upward arrows at posterior) -->
+    <path d="M 1040,340 C 1035,310 1030,280 1025,250"
+          fill="none" stroke="#0288D1" stroke-width="1.5" stroke-dasharray="4 3"
+          marker-end="url(#arrowhead-return)"/>
+
+    <!-- Air flow through spiracles (small inward arrows) -->
+    <path d="M 185,340 L 185,322" fill="none" stroke="#0288D1" stroke-width="1.2"
+          marker-end="url(#arrowhead-air)"/>
+    <path d="M 285,342 L 285,327" fill="none" stroke="#0288D1" stroke-width="1.2"
+          marker-end="url(#arrowhead-air)"/>
+    <path d="M 600,342 L 600,328" fill="none" stroke="#0288D1" stroke-width="1.2"
+          marker-end="url(#arrowhead-air)"/>
+    <path d="M 810,332 L 810,319" fill="none" stroke="#0288D1" stroke-width="1.2"
+          marker-end="url(#arrowhead-air)"/>
+
+    <text x="185" y="355" text-anchor="middle" font-family="Arial, sans-serif" font-size="8"
+          fill="#0288D1" font-style="italic">air in</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       LEGEND
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="legend" transform="translate(20, 430)">
+    <rect x="0" y="0" width="310" height="145" rx="6" fill="#FFFDE7" stroke="#BCAAA4" stroke-width="1" opacity="0.95"/>
+    <text x="10" y="18" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#3E2723">LEGEND</text>
+
+    <!-- Row 1 -->
+    <rect x="10" y="28" width="14" height="10" rx="2" fill="url(#grad-heart)" stroke="#B71C1C" stroke-width="0.8"/>
+    <text x="30" y="37" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Dorsal Heart</text>
+
+    <rect x="160" y="28" width="14" height="10" rx="2" fill="url(#grad-aorta)" stroke="#BF360C" stroke-width="0.8"/>
+    <text x="180" y="37" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Dorsal Aorta</text>
+
+    <!-- Row 2 -->
+    <rect x="10" y="46" width="14" height="10" rx="2" fill="#FFCDD2" stroke="#C62828" stroke-width="0.8"/>
+    <text x="30" y="55" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Ostia (valve openings)</text>
+
+    <rect x="160" y="46" width="14" height="10" rx="2" fill="url(#grad-hemolymph)" stroke="#03A9F4" stroke-width="0.8" opacity="0.4"/>
+    <text x="180" y="55" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Hemocoel</text>
+
+    <!-- Row 3 -->
+    <rect x="10" y="64" width="14" height="10" rx="2" fill="url(#grad-muscle)" stroke="#E64A19" stroke-width="0.8"/>
+    <text x="30" y="73" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Alary Muscles</text>
+
+    <rect x="160" y="64" width="14" height="10" rx="2" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="0.8"/>
+    <text x="180" y="73" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Tracheal System</text>
+
+    <!-- Row 4 -->
+    <rect x="10" y="82" width="14" height="10" rx="2" fill="#FFF9C4" stroke="#F57F17" stroke-width="0.8"/>
+    <text x="30" y="91" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Spiracles</text>
+
+    <rect x="160" y="82" width="14" height="10" rx="2" fill="url(#grad-trachea)" stroke="#4FC3F7" stroke-width="0.8"/>
+    <text x="180" y="91" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Air Sacs</text>
+
+    <!-- Row 5 -->
+    <rect x="10" y="100" width="14" height="10" rx="2" fill="url(#grad-digestive)" stroke="#E65100" stroke-width="0.8"/>
+    <text x="30" y="109" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Gastric Caeca</text>
+
+    <rect x="160" y="100" width="14" height="10" rx="2" fill="url(#grad-excretory)" stroke="#558B2F" stroke-width="0.8"/>
+    <text x="180" y="109" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Malpighian Tubules</text>
+
+    <!-- Flow arrows legend -->
+    <line x1="10" y1="123" x2="40" y2="123" stroke="#0277BD" stroke-width="2" stroke-dasharray="6 3"
+          marker-end="url(#arrowhead)"/>
+    <text x="48" y="127" font-family="Arial, sans-serif" font-size="10" fill="#3E2723">Hemolymph / Air Flow</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       BODY REGION LABELS
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="region-labels" opacity="0.5">
+    <text x="90" y="415" text-anchor="middle" font-family="Arial, sans-serif" font-size="12"
+          fill="#5D4037" font-weight="bold">HEAD</text>
+    <line x1="55" y1="400" x2="130" y2="400" stroke="#5D4037" stroke-width="1"/>
+
+    <text x="270" y="415" text-anchor="middle" font-family="Arial, sans-serif" font-size="12"
+          fill="#5D4037" font-weight="bold">THORAX</text>
+    <line x1="130" y1="400" x2="420" y2="400" stroke="#5D4037" stroke-width="1"/>
+
+    <text x="770" y="415" text-anchor="middle" font-family="Arial, sans-serif" font-size="12"
+          fill="#5D4037" font-weight="bold">ABDOMEN (11 segments)</text>
+    <line x1="420" y1="400" x2="1130" y2="400" stroke="#5D4037" stroke-width="1"/>
+
+    <!-- Thorax segment labels -->
+    <text x="170" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="8"
+          fill="#795548">T1</text>
+    <text x="260" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="8"
+          fill="#795548">T2</text>
+    <text x="365" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="8"
+          fill="#795548">T3</text>
+
+    <!-- Abdominal segment numbers -->
+    <text x="457" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A1</text>
+    <text x="530" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A2</text>
+    <text x="600" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A3</text>
+    <text x="670" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A4</text>
+    <text x="740" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A5</text>
+    <text x="810" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A6</text>
+    <text x="878" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A7</text>
+    <text x="940" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A8</text>
+    <text x="998" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A9</text>
+    <text x="1048" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A10</text>
+    <text x="1093" y="398" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#795548">A11</text>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════════════════════════ -->
+  <g id="footer">
+    <text x="650" y="580" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#8D6E63">
+      AnatoView &#8212; Grasshopper (Orthoptera) Open Circulatory System &#8212; Invertebrate Comparative Anatomy
+    </text>
+    <text x="650" y="594" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#A1887F">
+      Open circulatory system: hemolymph flows through hemocoel, not enclosed in blood vessels. Gas exchange via tracheal system, not blood.
+    </text>
+  </g>
+
+</svg>

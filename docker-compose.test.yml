@@ -1,0 +1,25 @@
+# Usage: docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+#
+# Then run E2E tests from the host:
+#   npx playwright test --config=tests/e2e/playwright.config.ts
+
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: anatoview_test
+
+  api:
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://anatoview:secret@postgres:5432/anatoview_test
+      - JWT_SECRET=test_jwt_secret_for_e2e
+    command: npx ts-node-dev --respawn src/index.ts
+
+  worker:
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://anatoview:secret@postgres:5432/anatoview_test
+
+  web:
+    environment:
+      - NODE_ENV=test

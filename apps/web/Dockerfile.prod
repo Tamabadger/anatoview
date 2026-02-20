@@ -1,0 +1,21 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package.json (no lock file in workspace packages — root owns it)
+COPY package.json ./
+RUN npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine AS runner
+
+# Copy built assets
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# SPA routing — serve index.html for all routes
+COPY infrastructure/nginx/spa.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD wget -qO- http://localhost:80 || exit 1
